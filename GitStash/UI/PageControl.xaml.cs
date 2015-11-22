@@ -16,19 +16,19 @@ using System.Windows.Shapes;
 namespace GitStash.UI
 {
     /// <summary>
-    /// Interaction logic for StashPageControl.xaml
+    /// Interaction logic for PageControl.xaml
     /// </summary>
-    public partial class StashPageControl : UserControl
+    public partial class PageControl : UserControl
     {
-        public StashPageControl()
+        public PageControl()
         {
             InitializeComponent();
         }
 
-        public StashPageControl(IServiceProvider serviceProvider)
+        public PageControl(PageViewModel stashPageViewModel)
         {
+            this.DataContext = stashPageViewModel;
             InitializeComponent();
-            //DataContext = new StashPageViewModel(serviceProvider);
         }
     }
 }

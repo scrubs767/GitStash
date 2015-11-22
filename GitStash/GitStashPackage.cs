@@ -67,6 +67,10 @@ namespace GitStash
         public const string StashNavigationItem = "8C35B3DF-D7CC-45BC-B958-BFAE3E157A21";
         public const string StashPage = "D40EAA8D-8CA8-47A2-9DF6-E3ABD9FD4FE7";
         public const string StashOptionsPage = "35836859-8302-47BA-AE29-F3825D82C179";
+
+
+        public const string ChangesSection = "E162E6A9-66E3-409D-B825-7BB31C3B60C4";
+        public const string RecommendedActionsSection = "{9CC25864-F7AA-45C2-9F78-0B1DDE2547A9}";
         /// <summary>
         /// Initializes a new instance of the <see cref="GitStashPackage"/> class.
         /// </summary>

@@ -153,6 +153,22 @@ namespace GitWrapper
             return false;
         }
 
+        public IList<string> GetUntrackedChangesList(int stashIndex)
+        {
+            Repository repo = new Repository(repoDirectory);
+
+            Stash stash = repo.Stashes.ElementAt(stashIndex);
+            IList<string> paths = new List<string>();
+            IList<string> p = stash.Untracked.Tree.Select(t => t.Path).ToList();
+            if (p.Count() == 0)
+                return paths;
+            DiffTargets dt = DiffTargets.WorkingDirectory;
+            var r = repo.Diff.Compare<TreeChanges>(stash.Untracked.Tree, dt, p);
+            if (!r.Any())
+                return paths;
+            return r.Modified.Select(c => c.Path).ToList();
+        }
+
         private static string GetUserEmailAddressVS14()
         {
             // It's a good practice to request explicit permission from

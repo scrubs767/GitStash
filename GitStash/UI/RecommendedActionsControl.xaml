@@ -1,0 +1,34 @@
+﻿<UserControl x:Class="GitStash.UI.RecommendedActionsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:GitStash.UI"
+             xmlns:teamExplorer="clr-namespace:Microsoft.TeamFoundation.Controls.WPF.TeamExplorer;assembly=Microsoft.TeamFoundation.Controls"                          
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/GitStash;component/Resources/Dictionary.xaml" />
+                <ResourceDictionary>
+                    <BooleanToVisibilityConverter x:Key="BoolToVis" />
+                </ResourceDictionary>
+
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+
+    </UserControl.Resources>
+    <WrapPanel Grid.Row="1">
+        <teamExplorer:DropDownLink Text="Save Stash" DropDownMenuCommand="{Binding Path=StashDropDownCommand}" Visibility="{Binding Path=CanStash}" />
+        <Separator Style="{StaticResource VerticalSeparator}" Visibility="{Binding Path=CanPop}" Margin="4,0,-1,0"/>
+
+        <teamExplorer:DropDownLink Text="Pop Stash" DropDownMenuCommand="{Binding Path=PopDropDownCommand}" Visibility="{Binding Path=CanPop}" />
+        <Separator Style="{StaticResource VerticalSeparator}" Visibility="{Binding Path=CanApply}" Margin="4,0,-1,0"/>
+
+        <teamExplorer:DropDownLink Text="Apply Stash" DropDownMenuCommand="{Binding Path=ApplyDropDownCommand}" Visibility="{Binding Path=CanApply}" />
+        <Separator Style="{StaticResource VerticalSeparator}" Visibility="{Binding Path=CanDrop}" Margin="4,0,-1,0"/>
+
+        <teamExplorer:DropDownLink Text="Drop Stash" DropDownMenuCommand="{Binding Path=DropDropDownCommand}" Visibility="{Binding Path=CanDrop}" />
+    </WrapPanel>
+</UserControl>

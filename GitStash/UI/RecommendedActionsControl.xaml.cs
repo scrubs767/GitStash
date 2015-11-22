@@ -12,16 +12,23 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using GitStash.ViewModels;
 
 namespace GitStash.UI
 {
     /// <summary>
-    /// Interaction logic for UserControl1.xaml
+    /// Interaction logic for RecommendedActionsControl.xaml
     /// </summary>
-    public partial class UserControl1 : UserControl
+    public partial class RecommendedActionsControl : UserControl
     {
-        public UserControl1()
+        public RecommendedActionsControl()
         {
+            InitializeComponent();
+        }
+
+        public RecommendedActionsControl(RecommendedActionsViewModel recommendedActionsViewModel)
+        {
+            this.DataContext = recommendedActionsViewModel;
             InitializeComponent();
         }
     }
