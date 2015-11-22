@@ -18,7 +18,7 @@ namespace GitStash
         private static IVsOutputWindowPane outputWindow;
         private object serviceProvider;
 
-        public IEnumerable<StashItem> Stashes
+        public IEnumerable<GitStashItem> Stashes
         {
             get; set;
         }

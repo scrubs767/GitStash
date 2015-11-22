@@ -79,7 +79,6 @@
     <Compile Include="Options\StashSettingsPageControl.xaml.cs">
       <DependentUpon>StashSettingsPageControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="VsGitFlowWrapper.cs" />
     <Compile Include="GitStashPackage.cs" />
   </ItemGroup>
   <ItemGroup>

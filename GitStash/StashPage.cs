@@ -22,12 +22,12 @@ namespace GitStash
         private static IVsOutputWindowPane outputWindow;
         private StashPageControl ui;
         private IServiceProvider serviceProvider;
-        public VsGitFlowWrapper GitWrapper { get; set; }
+        //public VsGitFlowWrapper GitWrapper { get; set; }
 
         [ImportingConstructor]
         public StashPage([Import(typeof(SVsServiceProvider))] IServiceProvider serviceProvider)
         {
-            GitWrapper = new VsGitFlowWrapper(@"C:\Users\Stephen\Documents\GitHub\test", serviceProvider.GetService(typeof(SVsGeneralOutputWindowPane)) as IVsOutputWindowPane);
+            //GitWrapper = new VsGitFlowWrapper(@"C:\Users\Stephen\Documents\GitHub\test", serviceProvider.GetService(typeof(SVsGeneralOutputWindowPane)) as IVsOutputWindowPane);
             Title = "GitStash";
             //gitService = (IGitExt)serviceProvider.GetService(typeof(IGitExt));
             teamExplorer = (ITeamExplorer)serviceProvider.GetService(typeof(ITeamExplorer));
