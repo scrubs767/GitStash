@@ -44,7 +44,7 @@ namespace GitWrapper
 
         private void OnGitServicePropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (gitExt == null) // ifthis is null we should ever be called
+            if (gitExt == null || gitExt.ActiveRepositories.Count() == 0) // ifthis is null we should ever be called
                 return;
             this.repoDirectory = gitExt.ActiveRepositories.FirstOrDefault().RepositoryPath;
             if (PropertyChanged != null)
