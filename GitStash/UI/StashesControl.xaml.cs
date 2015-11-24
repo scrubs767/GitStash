@@ -12,23 +12,25 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using GitStash.ViewModels;
 
 namespace GitStash.UI
 {
     /// <summary>
-    /// Interaction logic for StashPageControl.xaml
+    /// Interaction logic for StashesControl.xaml
     /// </summary>
-    public partial class StashPageControl : UserControl
+    public partial class StashesControl : UserControl
     {
-        public StashPageControl()
+        public StashesControl()
         {
             InitializeComponent();
         }
 
-        public StashPageControl(IServiceProvider serviceProvider)
+        public StashesControl(StashesViewModel stashesViewModel)
         {
             InitializeComponent();
-            //DataContext = new StashPageViewModel(serviceProvider);
+            DataContext = stashesViewModel;
+            
         }
     }
 }

@@ -239,5 +239,39 @@ namespace GitStash
             Assert.IsTrue(git.Stashes.Count == 1);
             Assert.IsFalse(File.Exists(@"test\file2"));
         }
+
+        [TestMethod]
+        public void TestStashesReturnsTheProperIndex()
+        {
+            FileStream fs = File.Create(@"test\file2");
+            fs.Close();
+
+            GitStashWrapper git = new GitStashWrapper("test");
+            GitStashOptions options = new GitStashOptions { Untracked = true };
+            options.Message = "one";
+            IGitStashResults results = git.SaveStash(options);
+            Assert.IsTrue(results.Success);
+            Assert.IsTrue(git.Stashes.Count == 1);
+            Assert.IsFalse(File.Exists("file2"));
+
+            fs = File.Create(@"test\file2");
+            fs.Close();
+
+            options.Message = "two";
+            results = git.SaveStash(options);
+
+            Assert.IsTrue(results.Success);
+            Assert.IsTrue(git.Stashes.Count == 2);
+            Assert.IsFalse(File.Exists("file2"));
+
+            IGitStash recent = git.Stashes[0];
+            IGitStash older = git.Stashes[1];
+
+            Assert.IsTrue(recent.Index == 0);
+            Assert.IsTrue(recent.Message == "two");
+
+            Assert.IsTrue(older.Index == 1);
+            Assert.IsTrue(older.Message == "one");
+        }
     }
 }

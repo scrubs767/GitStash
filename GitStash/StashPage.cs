@@ -20,7 +20,6 @@ namespace GitStash
     {
         private static ITeamExplorer teamExplorer;
         private static IVsOutputWindowPane outputWindow;
-        private StashPageControl ui;
         private IServiceProvider serviceProvider;
         //public VsGitFlowWrapper GitWrapper { get; set; }
 
@@ -37,8 +36,8 @@ namespace GitStash
             var customGuid = new Guid("D9B93453-B887-407F-99EC-66C6FD5CA84C");
             outWindow.CreatePane(ref customGuid, "GitStash", 1, 1);
             outWindow.GetPane(ref customGuid, out outputWindow);
-            ui = new StashPageControl(serviceProvider);
-            PageContent = ui;
+            PageContent = new PageControl(new PageViewModel(serviceProvider));
+            
         }
 
         public static void ShowPage(string page)
