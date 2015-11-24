@@ -6,15 +6,23 @@ using GitStash.ViewModels;
 using Microsoft.VisualStudio.Shell.Interop;
 using System.Linq;
 using Microsoft.VisualStudio.TeamFoundation.Git.Extensibility;
+using GitWrapper;
 
 namespace GitStash
 {
     public class PageViewModel : INotifyPropertyChanged
     {
         private static IGitExt gitService;
-        private static ITeamExplorer teamExplorer;
-        private static IVsOutputWindowPane outputWindow;
-        private object serviceProvider;
+        private GitStashWrapper wrapper;
+
+        
+
+        public PageViewModel(IServiceProvider serviceProvider)
+        {
+            wrapper = new GitStashWrapper((IGitExt)serviceProvider.GetService(typeof(IGitExt)));
+            gitService = ((IGitExt)serviceProvider.GetService(typeof(IGitExt)));
+            SelectBranchCommand = new RelayCommand(p => SelectBranch(), p => CanSelectBranch);
+        }
 
         public string CurrentBranch
         {
@@ -25,12 +33,6 @@ namespace GitStash
 
                 return "no current branch";
             }
-        }
-
-        public PageViewModel(IServiceProvider serviceProvider)
-        {
-            gitService = (IGitExt)serviceProvider.GetService(typeof(IGitExt));
-            SelectBranchCommand = new RelayCommand(p => SelectBranch(), p => CanSelectBranch);
         }
 
         private void SelectBranch()

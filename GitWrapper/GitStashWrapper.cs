@@ -1,15 +1,27 @@
 ﻿using LibGit2Sharp;
+using Microsoft.VisualStudio.TeamFoundation.Git.Extensibility;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.ComponentModel;
 
 namespace GitWrapper
 {
-    public class GitStashWrapper 
+    public class GitStashWrapper : INotifyPropertyChanged
     {
-        private readonly string repoDirectory;
+        private string repoDirectory;
+        private IGitExt gitExt;
 
+        public GitStashWrapper(IGitExt gitExt) : this(gitExt.ActiveRepositories.FirstOrDefault().RepositoryPath)
+        {
+            Repository repo = null;
+            this.gitExt = gitExt;
+            gitExt.PropertyChanged += OnGitServicePropertyChanged;
+        }
+
+        // I'm lazy and dont feel like mocking IGitExt, so this is here for testing
+        // IGitExt is only used for the event when the repo is changed
         public GitStashWrapper(string repoDirectory)
         {
             Repository repo = null;
@@ -19,14 +31,25 @@ namespace GitWrapper
             {
                 repo = new Repository(repoDirectory);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new GitStashException(ex);
             }
             finally
             {
-                if(repo != null)
+                if (repo != null)
                     repo.Dispose();
+            }
+        }
+
+        private void OnGitServicePropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (gitExt == null) // ifthis is null we should ever be called
+                return;
+            this.repoDirectory = gitExt.ActiveRepositories.FirstOrDefault().RepositoryPath;
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs("Stashes"));
             }
         }
 
@@ -45,6 +68,13 @@ namespace GitWrapper
                 }
                return stashes;
             }
+        }
+
+        public bool WorkingDirHasChanges()
+        {
+            Repository repo = new Repository(repoDirectory);
+
+            return repo.RetrieveStatus().IsDirty;
         }
 
         private void CheckForValidStashIndex(int index, Repository repo)
@@ -128,6 +158,9 @@ namespace GitWrapper
         
 
         private Signature stasher = null;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
         private Signature Stasher
         {
             get
@@ -143,6 +176,8 @@ namespace GitWrapper
         private bool UntrackedFileChanges(int index, Repository repo)
         {
             Stash stash = repo.Stashes.ElementAt(index);
+            if (stash.Untracked == null)
+                return false;
             IList<string> p = stash.Untracked.Tree.Select(t => t.Path).ToList();
             if (p.Count() == 0)
                 return false;

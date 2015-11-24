@@ -15,12 +15,17 @@ namespace GitStash.Sections
     {
         public RecommendedActionsSection()
         {
-            Title = "Recommended Actions";
-            IsVisible = true;
-            //UpdateVisibleState();
-            SectionContent = new RecommendedActionsControl(new RecommendedActionsViewModel(this));
+            
+            
         }
 
+        public override void Initialize(object sender, SectionInitializeEventArgs e)
+        {
+            base.Initialize(sender, e);
+            SectionContent = new RecommendedActionsControl(new RecommendedActionsViewModel(ServiceProvider));
+            Title = "Create Stash";
+            IsVisible = true;
+        }
         public override void Refresh()
         {
             var service = GetService<ITeamExplorerPage>();

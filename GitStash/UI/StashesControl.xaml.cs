@@ -17,19 +17,20 @@ using GitStash.ViewModels;
 namespace GitStash.UI
 {
     /// <summary>
-    /// Interaction logic for UserControl1.xaml
+    /// Interaction logic for StashesControl.xaml
     /// </summary>
-    public partial class ChangedFilesControl : UserControl
+    public partial class StashesControl : UserControl
     {
-        public ChangedFilesControl()
+        public StashesControl()
         {
             InitializeComponent();
         }
 
-        public ChangedFilesControl(ChangedFilesViewModel changedFilesViewModel)
+        public StashesControl(StashesViewModel stashesViewModel)
         {
-            this.DataContext = changedFilesViewModel;
             InitializeComponent();
+            DataContext = stashesViewModel;
+            
         }
     }
 }

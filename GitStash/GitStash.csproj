@@ -52,7 +52,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Sections\ChangedFilesSection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -60,6 +59,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Sections\RecommendedActionsSection.cs" />
+    <Compile Include="Sections\StashesSection.cs" />
     <Compile Include="Stash.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -71,14 +71,13 @@
     <Compile Include="UI\RecommendedActionsControl.xaml.cs">
       <DependentUpon>RecommendedActionsControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\StashesControl.xaml.cs">
+      <DependentUpon>StashesControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\StashPageControl.xaml.cs">
       <DependentUpon>StashPageControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\ChangedFilesControl.xaml.cs">
-      <DependentUpon>ChangedFilesControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ViewModels\ChangedFilesViewModel.cs" />
-    <Compile Include="ViewModels\FileTreeViewModel.cs" />
+    <Compile Include="ViewModels\AfterDeleteStashEventArgs.cs" />
     <Compile Include="ViewModels\RecommendedActionsViewModel.cs" />
     <Compile Include="ViewModels\RelayCommand.cs" />
     <Compile Include="ViewModels\PageViewModel.cs" />
@@ -91,6 +90,8 @@
       <DependentUpon>StashSettingsPageControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="GitStashPackage.cs" />
+    <Compile Include="ViewModels\StashesViewModel.cs" />
+    <Compile Include="ViewModels\StashViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Key.snk" />
@@ -261,11 +262,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\StashPageControl.xaml">
+    <Page Include="UI\StashesControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\ChangedFilesControl.xaml">
+    <Page Include="UI\StashPageControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
