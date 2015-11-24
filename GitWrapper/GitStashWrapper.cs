@@ -5,48 +5,39 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel;
+using System.ComponentModel.Composition;
 
 namespace GitWrapper
 {
-    public class GitStashWrapper : INotifyPropertyChanged
+    [Export(typeof(IGitStashWrapper))]
+    public class GitStashWrapper : INotifyPropertyChanged, IGitStashWrapper
     {
-        private string repoDirectory;
-        private IGitExt gitExt;
+        private IGitExt gitService;
+        private Repository repo;
 
-        public GitStashWrapper(IGitExt gitExt) : this(gitExt.ActiveRepositories.FirstOrDefault().RepositoryPath)
+        [ImportingConstructor]
+        public GitStashWrapper([Import(typeof(IGitExt))] IGitExt gitService)
         {
-            Repository repo = null;
-            this.gitExt = gitExt;
-            gitExt.PropertyChanged += OnGitServicePropertyChanged;
-        }
-
-        // I'm lazy and dont feel like mocking IGitExt, so this is here for testing
-        // IGitExt is only used for the event when the repo is changed
-        public GitStashWrapper(string repoDirectory)
-        {
-            Repository repo = null;
-            this.repoDirectory = repoDirectory;
+            this.gitService = gitService;
+            if (gitService == null || gitService.ActiveRepositories.Count() == 0) // ifthis is null we should ever be called
+                throw new ArgumentException("Parameter not initialized", "gitService");
+            this.gitService.PropertyChanged += OnGitServicePropertyChanged;
             //test repo exists
             try
             {
-                repo = new Repository(repoDirectory);
+                repo = new Repository(gitService.ActiveRepositories.FirstOrDefault().RepositoryPath);
             }
             catch (Exception ex)
             {
                 throw new GitStashException(ex);
             }
-            finally
-            {
-                if (repo != null)
-                    repo.Dispose();
-            }
         }
 
         private void OnGitServicePropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (gitExt == null || gitExt.ActiveRepositories.Count() == 0) // ifthis is null we should ever be called
+            if (gitService == null || gitService.ActiveRepositories.Count() == 0) // ifthis is null we should ever be called
                 return;
-            this.repoDirectory = gitExt.ActiveRepositories.FirstOrDefault().RepositoryPath;
+            repo = new Repository(gitService.ActiveRepositories.FirstOrDefault().RepositoryPath); // probably memory leak her
             if (PropertyChanged != null)
             {
                 PropertyChanged(this, new PropertyChangedEventArgs("Stashes"));
@@ -58,21 +49,18 @@ namespace GitWrapper
             get
             {
                 List<IGitStash> stashes = new List<IGitStash>();
-                using (var repo = new Repository(repoDirectory))
-                {
+
                     foreach (Stash stash in repo.Stashes)
                     {
                         GitStashItem s = new GitStashItem(stash);
                         stashes.Add(s);                       
                     }
-                }
                return stashes;
             }
         }
 
         public bool WorkingDirHasChanges()
         {
-            Repository repo = new Repository(repoDirectory);
 
             return repo.RetrieveStatus().IsDirty;
         }
@@ -88,8 +76,7 @@ namespace GitWrapper
 
         public IGitStashResults PopStash(IGitStashPopOptions options, int index)
         {
-            using (var repo = new Repository(repoDirectory))
-            {
+      
                 int count = repo.Stashes.Count();
                 CheckForValidStashIndex(index, repo);
                 if (UntrackedFileChanges(index, repo))
@@ -101,13 +88,12 @@ namespace GitWrapper
                 if (repo.Stashes.Count() >= count && results.Success)
                     throw new GitStashException("Command pop was called and reported success, but stash count didnt decrement.");
                 return results;
-            }
+           
         }
 
         public IGitStashResults ApplyStash(IGitStashApplyOptions options, int index)
         {
-            using (var repo = new Repository(repoDirectory))
-            {
+       
                 int count = repo.Stashes.Count();
                 CheckForValidStashIndex(index, repo);
                 if(UntrackedFileChanges(index,repo))
@@ -119,13 +105,12 @@ namespace GitWrapper
                 if (repo.Stashes.Count() != count && results.Success)
                     throw new GitStashException("Command apply was called and reported success, but stash count changed.");
                 return results;
-            }
+         
         }
 
         public IGitStashResults SaveStash(IGitStashSaveOptions options)
         {
-            using (var repo = new Repository(repoDirectory))
-            {
+        
                 int count = repo.Stashes.Count();
                 if (!repo.RetrieveStatus().IsDirty)
                 {
@@ -139,13 +124,12 @@ namespace GitWrapper
                 if (repo.Stashes.Count() <= count && results.Success)
                     throw new GitStashException("Command save was called and reported success, but stash didn't increase.");
                 return results;
-            }
+       
         }
 
         public IGitStashResults DropStash(IGitStashDropOptions options, int index)
         {
-            using (var repo = new Repository(repoDirectory))
-            {
+           
                 CheckForValidStashIndex(index, repo);
                 int count = repo.Stashes.Count();
                 repo.Stashes.Remove(index);
@@ -153,7 +137,7 @@ namespace GitWrapper
                     return new GitStashResultsSuccess();
                 else
                     return new GitStashResultsFailure();
-            }
+            
         }
         
 
@@ -190,8 +174,6 @@ namespace GitWrapper
 
         public IList<string> GetUntrackedChangesList(int stashIndex)
         {
-            Repository repo = new Repository(repoDirectory);
-
             Stash stash = repo.Stashes.ElementAt(stashIndex);
             IList<string> paths = new List<string>();
             IList<string> p = stash.Untracked.Tree.Select(t => t.Path).ToList();

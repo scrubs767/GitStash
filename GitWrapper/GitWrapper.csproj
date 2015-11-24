@@ -48,6 +48,7 @@
       <HintPath>..\..\..\..\..\..\..\..\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Microsoft.TeamFoundation.Git.Provider.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -67,6 +68,7 @@
     <Compile Include="IGitStashSaveOptions.cs" />
     <Compile Include="IGitStashResults.cs" />
     <Compile Include="IGitStash.cs" />
+    <Compile Include="IGitStashWrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GitStashItem.cs" />
     <Compile Include="GitStashOptions.cs" />
