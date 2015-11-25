@@ -16,7 +16,7 @@ namespace GitStash.ViewModels
         public event AfterDeleteHandler AfterDelete;
 
         private IGitStash stash;
-        private GitStashWrapper wrapper;
+        private IGitStashWrapper wrapper;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -28,7 +28,7 @@ namespace GitStash.ViewModels
             }
         }
 
-        public StashViewModel(GitStashWrapper wrapper, IGitStash stash)
+        public StashViewModel(IGitStashWrapper wrapper, IGitStash stash)
         {
             this.stash = stash;
             this.wrapper = wrapper;

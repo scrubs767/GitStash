@@ -19,6 +19,8 @@ using Microsoft.Win32;
 using System.Windows.Forms;
 using GitStash;
 using System.Windows;
+using EnvDTE80;
+using EnvDTE;
 
 namespace GitStash
 {
@@ -92,6 +94,7 @@ namespace GitStash
         {
             base.Initialize();
         }
+
 
         #endregion
     }

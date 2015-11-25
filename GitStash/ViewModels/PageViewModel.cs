@@ -13,14 +13,13 @@ namespace GitStash
     public class PageViewModel : INotifyPropertyChanged
     {
         private static IGitExt gitService;
-        private GitStashWrapper wrapper;
+        private IGitStashWrapper wrapper;
 
         
 
-        public PageViewModel(IServiceProvider serviceProvider)
+        public PageViewModel(IGitStashWrapper wrapper)
         {
-            wrapper = new GitStashWrapper((IGitExt)serviceProvider.GetService(typeof(IGitExt)));
-            gitService = ((IGitExt)serviceProvider.GetService(typeof(IGitExt)));
+           this. wrapper = wrapper;
             SelectBranchCommand = new RelayCommand(p => SelectBranch(), p => CanSelectBranch);
         }
 

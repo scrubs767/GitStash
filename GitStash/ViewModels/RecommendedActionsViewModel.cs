@@ -1,45 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using GitWrapper;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GitStash.Sections;
-using Microsoft.VisualStudio.TeamFoundation.Git.Extensibility;
-using Microsoft.TeamFoundation.Controls;
-using Microsoft.VisualStudio.Shell.Interop;
-using GitWrapper;
 using System.Runtime.CompilerServices;
 
 namespace GitStash.ViewModels
 {
     public class RecommendedActionsViewModel : INotifyPropertyChanged
     {
-        private static IGitExt gitService;
-        private GitStashWrapper wrapper;
+       // private static IGitExt gitService;
+        private IGitStashWrapper wrapper;
 
-        public RecommendedActionsViewModel(IServiceProvider serviceProvider)
+        public RecommendedActionsViewModel(IGitStashWrapper wrapper)
         {
-            ITeamExplorer teamExplorer = (ITeamExplorer)serviceProvider.GetService(typeof(ITeamExplorer));
-            teamExplorer.PropertyChanged += GitService_PropertyChanged;
-            wrapper = new GitStashWrapper((IGitExt)serviceProvider.GetService(typeof(IGitExt)));
-            gitService = ((IGitExt)serviceProvider.GetService(typeof(IGitExt)));
-            ((IGitExt)serviceProvider.GetService(typeof(IGitExt))).PropertyChanged += GitService_PropertyChanged;
+            this.wrapper = wrapper;
+            wrapper.StashesChangedEvent += GitService_PropertyChanged;
             CreateStashButtonCommand = new RelayCommand(p => OnClickCreateStashButton(), p => CanClickCreateStashButton);
             NewStashMessage = "";
         }
 
-        private void GitService_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void GitService_PropertyChanged(object sender, StashesChangedEventArgs e)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs("CanSelectBranch"));
-                PropertyChanged(this, new PropertyChangedEventArgs("CreateStashNameEnabled"));
-                PropertyChanged(this, new PropertyChangedEventArgs("CreateStashButtonEnabled"));
-                PropertyChanged(this, new PropertyChangedEventArgs("CanClickCreateStashButton"));
-            }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CanSelectBranch"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CreateStashNameEnabled"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CreateStashButtonEnabled"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CanClickCreateStashButton"));
         }
-
 
         private string _newStashMessage = "";
         public string NewStashMessage
@@ -56,13 +40,6 @@ namespace GitStash.ViewModels
         }
         
         public bool CreateStashNameEnabled { get { return wrapper.WorkingDirHasChanges(); } }
-        //public bool CreateStashButtonEnabled
-        //{
-        //    get
-        //    {
-        //        return wrapper.WorkingDirHasChanges() && NewStashMessage.Length > 0;
-        //    }
-        //}
 
 
         public bool StashKeepIndex { get; set; }
@@ -76,7 +53,7 @@ namespace GitStash.ViewModels
         public RelayCommand CreateStashButtonCommand { get; private set; }
         public bool CanClickCreateStashButton
         {
-            get { return true; }
+            get { return wrapper.WorkingDirHasChanges() && NewStashMessage.Length > 0; }
         }
         public bool StashAll
         {

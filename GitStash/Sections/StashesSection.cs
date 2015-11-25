@@ -18,10 +18,12 @@ namespace GitStash.Sections
     public class StashesSection : TeamExplorerBaseSection
     {
         StashesViewModel vm;
+        IGitStashWrapper wrapper;
+
         [ImportingConstructor]
-        public StashesSection([Import(typeof(SVsServiceProvider))] IServiceProvider serviceProvider)
+        public StashesSection(IGitStashWrapper wrapper)
         {
-            vm = new StashesViewModel(new GitStashWrapper((IGitExt)serviceProvider.GetService(typeof(IGitExt))));
+            vm = new StashesViewModel(wrapper);
             vm.PropertyChanged += StashesPropertyChanged;
             Title = String.Format("Stashes({0})",vm.Stashes.Count());
             IsVisible = true;

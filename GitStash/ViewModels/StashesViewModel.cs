@@ -11,13 +11,21 @@ namespace GitStash.ViewModels
 {
     public class StashesViewModel : INotifyPropertyChanged
     {
-        GitStashWrapper git;
+        IGitStashWrapper git;
 
-        public StashesViewModel(GitStashWrapper git)
+        public StashesViewModel(IGitStashWrapper git)
         {
             this.git = git;
+            git.StashesChangedEvent += Git_StashesChangedEvent;
             git.PropertyChanged += Git_PropertyChanged;
+        }
 
+        private void Git_StashesChangedEvent(object sender, StashesChangedEventArgs e)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs("Stashes"));
+            }
         }
 
         private void Git_PropertyChanged(object sender, PropertyChangedEventArgs e)

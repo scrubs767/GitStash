@@ -15,5 +15,6 @@ namespace GitWrapper
         IGitStashResults PopStash(IGitStashPopOptions options, int index);
         IGitStashResults SaveStash(IGitStashSaveOptions options);
         bool WorkingDirHasChanges();
+        event GitStashWrapper.StashesChangedEventHandler StashesChangedEvent;
     }
 }

@@ -10,6 +10,7 @@ using Microsoft.VisualStudio.Shell;
 using GitStash.UI;
 using System.Windows.Threading;
 using GitStash.Properties;
+using GitWrapper;
 
 namespace GitStash
 {
@@ -21,22 +22,19 @@ namespace GitStash
         private static ITeamExplorer teamExplorer;
         private static IVsOutputWindowPane outputWindow;
         private IServiceProvider serviceProvider;
-        //public VsGitFlowWrapper GitWrapper { get; set; }
+        private IGitStashWrapper wrapper;
 
         [ImportingConstructor]
         public StashPage([Import(typeof(SVsServiceProvider))] IServiceProvider serviceProvider)
         {
-            //GitWrapper = new VsGitFlowWrapper(@"C:\Users\Stephen\Documents\GitHub\test", serviceProvider.GetService(typeof(SVsGeneralOutputWindowPane)) as IVsOutputWindowPane);
-            Title = "GitStash";
-            //gitService = (IGitExt)serviceProvider.GetService(typeof(IGitExt));
+           Title = "GitStash";
             teamExplorer = (ITeamExplorer)serviceProvider.GetService(typeof(ITeamExplorer));
-            //gitService.PropertyChanged += OnGitServicePropertyChanged;
-
+            wrapper = (IGitStashWrapper)serviceProvider.GetService(typeof(IGitStashWrapper));
             var outWindow = Package.GetGlobalService(typeof(SVsOutputWindow)) as IVsOutputWindow;
             var customGuid = new Guid("D9B93453-B887-407F-99EC-66C6FD5CA84C");
             outWindow.CreatePane(ref customGuid, "GitStash", 1, 1);
             outWindow.GetPane(ref customGuid, out outputWindow);
-            PageContent = new PageControl(new PageViewModel(serviceProvider));
+            PageContent = new PageControl(new PageViewModel(wrapper));
             
         }
 

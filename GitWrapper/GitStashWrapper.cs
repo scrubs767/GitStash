@@ -6,19 +6,47 @@ using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel;
 using System.ComponentModel.Composition;
+using EnvDTE80;
+using EnvDTE;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace GitWrapper
 {
+    [PartCreationPolicy(CreationPolicy.Shared)]
     [Export(typeof(IGitStashWrapper))]
     public class GitStashWrapper : INotifyPropertyChanged, IGitStashWrapper
     {
         private IGitExt gitService;
         private Repository repo;
+        private Lazy<DTE2> dte;
+        private Lazy<RunningDocumentTable> rdt;
+        private Lazy<EnvDTE.Events> events;
+        private Lazy<EnvDTE.DocumentEvents> documentEvents;
+        private Signature stasher = null;
+        private Lazy<SolutionEvents> solutionEvents;
+
+        public delegate  void StashesChangedEventHandler(object sender,  StashesChangedEventArgs e);
+        public event StashesChangedEventHandler StashesChangedEvent;
+
+        private void OnStashesChanged(StashesChangedEventArgs e)
+        {
+            StashesChangedEvent?.Invoke(this, e);
+        }
+        private void DocumentEvents_DocumentSaved(Document Document)
+        {
+            OnStashesChanged(new StashesChangedEventArgs());
+        }
 
         [ImportingConstructor]
-        public GitStashWrapper([Import(typeof(IGitExt))] IGitExt gitService)
+        public GitStashWrapper([Import(typeof(SVsServiceProvider))] IServiceProvider serviceProvider)
         {
-            this.gitService = gitService;
+            dte = new Lazy<DTE2>(() => ServiceProvider.GlobalProvider.GetService(typeof(EnvDTE.DTE)) as DTE2);
+            events = new Lazy<EnvDTE.Events>(() => dte.Value.Events);
+            documentEvents = new Lazy<EnvDTE.DocumentEvents>(() => events.Value.DocumentEvents);
+            documentEvents.Value.DocumentSaved += DocumentEvents_DocumentSaved;
+
+            this.gitService = (IGitExt)serviceProvider.GetService(typeof(IGitExt));
             if (gitService == null || gitService.ActiveRepositories.Count() == 0) // ifthis is null we should ever be called
                 throw new ArgumentException("Parameter not initialized", "gitService");
             this.gitService.PropertyChanged += OnGitServicePropertyChanged;
@@ -140,9 +168,6 @@ namespace GitWrapper
             
         }
         
-
-        private Signature stasher = null;
-
         public event PropertyChangedEventHandler PropertyChanged;
 
         private Signature Stasher

@@ -239,6 +239,8 @@
     <ProjectReference Include="..\GitWrapper\GitWrapper.csproj">
       <Project>{3835615a-a669-455a-8bdc-3f23f390443e}</Project>
       <Name>GitWrapper</Name>
+      <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
+      <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
     </ProjectReference>
     <ProjectReference Include="..\TeamExplorer.Common\TeamExplorer.Common.csproj">
       <Project>{388ac013-c628-4a32-abbc-a28a68c3a112}</Project>
