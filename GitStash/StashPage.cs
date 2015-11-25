@@ -30,20 +30,19 @@ namespace GitStash
         {
            Title = "Git Stash";
             teamExplorer = (ITeamExplorer)serviceProvider.GetService(typeof(ITeamExplorer));
-            gitService = (IGitExt)serviceProvider.GetService(typeof(IGitExt));
-            gitWrapper = new GitStashWrapper(serviceProvider);            
+            gitService = (IGitExt)serviceProvider.GetService(typeof(IGitExt));                        
             var outWindow = Package.GetGlobalService(typeof(SVsOutputWindow)) as IVsOutputWindow;
             var customGuid = new Guid("D9B93453-B887-407F-99EC-66C6FD5CA84C");
             outWindow.CreatePane(ref customGuid, "Git Stash", 1, 1);
             outWindow.GetPane(ref customGuid, out outputWindow);
+            gitWrapper = new GitStashWrapper(serviceProvider, new OutputWindowLogger(outputWindow));
         }
 
         public override void Initialize(object sender, PageInitializeEventArgs e)
         {
             base.Initialize(sender, e);
             gitWrapper = GetService<IGitStashWrapper>();
-            PageContent = new PageControl(new PageViewModel(gitWrapper));
-            
+            PageContent = new PageControl(new PageViewModel(gitWrapper));            
         }
 
         public override object GetExtensibilityService(Type serviceType)

@@ -98,6 +98,7 @@
     <Compile Include="IGitStashResults.cs" />
     <Compile Include="IGitStash.cs" />
     <Compile Include="IGitStashWrapper.cs" />
+    <Compile Include="IOutputLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GitStashItem.cs" />
     <Compile Include="GitStashOptions.cs" />

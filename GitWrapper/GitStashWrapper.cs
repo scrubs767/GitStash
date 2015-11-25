@@ -13,8 +13,6 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace GitWrapper
 {
-    [PartCreationPolicy(CreationPolicy.Shared)]
-    [Export(typeof(IGitStashWrapper))]
     public class GitStashWrapper : INotifyPropertyChanged, IGitStashWrapper
     {
         private IGitExt gitService;
@@ -26,7 +24,7 @@ namespace GitWrapper
         private Signature stasher = null;
         private Lazy<SolutionEvents> solutionEvents;
 
-        public delegate  void StashesChangedEventHandler(object sender,  StashesChangedEventArgs e);
+        public delegate void StashesChangedEventHandler(object sender, StashesChangedEventArgs e);
         public event StashesChangedEventHandler StashesChangedEvent;
 
         private void OnStashesChanged(StashesChangedEventArgs e)
@@ -38,13 +36,14 @@ namespace GitWrapper
             OnStashesChanged(new StashesChangedEventArgs());
         }
 
-        [ImportingConstructor]
-        public GitStashWrapper([Import(typeof(SVsServiceProvider))] IServiceProvider serviceProvider)
+        public GitStashWrapper(IServiceProvider serviceProvider, IOutputLogger logger)
         {
             dte = new Lazy<DTE2>(() => ServiceProvider.GlobalProvider.GetService(typeof(EnvDTE.DTE)) as DTE2);
             events = new Lazy<EnvDTE.Events>(() => dte.Value.Events);
             documentEvents = new Lazy<EnvDTE.DocumentEvents>(() => events.Value.DocumentEvents);
             documentEvents.Value.DocumentSaved += DocumentEvents_DocumentSaved;
+
+            this.Logger = logger;
 
             this.gitService = (IGitExt)serviceProvider.GetService(typeof(IGitExt));
             if (gitService == null || gitService.ActiveRepositories.Count() == 0) // ifthis is null we should ever be called
@@ -78,12 +77,12 @@ namespace GitWrapper
             {
                 List<IGitStash> stashes = new List<IGitStash>();
 
-                    foreach (Stash stash in repo.Stashes)
-                    {
-                        GitStashItem s = new GitStashItem(stash);
-                        stashes.Add(s);                       
-                    }
-               return stashes;
+                foreach (Stash stash in repo.Stashes)
+                {
+                    GitStashItem s = new GitStashItem(stash);
+                    stashes.Add(s);
+                }
+                return stashes;
             }
         }
 
@@ -104,79 +103,104 @@ namespace GitWrapper
 
         public IGitStashResults PopStash(IGitStashPopOptions options, int index)
         {
-      
-                int count = repo.Stashes.Count();
-                CheckForValidStashIndex(index, repo);
-                if (UntrackedFileChanges(index, repo))
-                    return new GitStashResultsFailure();
-                StashApplyOptions sao = new StashApplyOptions();
-                sao.ApplyModifiers = (options.Index ? StashApplyModifiers.ReinstateIndex : 0);
-                StashApplyStatus status = repo.Stashes.Pop(index,sao);
-                GitStashResults results = new GitStashResults(status);
-                if (repo.Stashes.Count() >= count && results.Success)
-                    throw new GitStashException("Command pop was called and reported success, but stash count didnt decrement.");
-                return results;
-           
+            Logger.WriteLine("Apllying stash: " + index);
+            int count = repo.Stashes.Count();
+            CheckForValidStashIndex(index, repo);
+            if (UntrackedFileChanges(index, repo))
+            {
+                Logger.WriteLine("There are changes in your working directory, aborting.");
+                return new GitStashResultsFailure();
+            }
+            StashApplyOptions sao = new StashApplyOptions();
+            sao.ApplyModifiers = (options.Index ? StashApplyModifiers.ReinstateIndex : 0);
+            StashApplyStatus status = repo.Stashes.Pop(index, sao);
+            GitStashResults results = new GitStashResults(status);
+            if (repo.Stashes.Count() != count && results.Success)
+            {
+                Logger.WriteLine("Failed.");
+                throw new GitStashException("Command apply and delete was called, reported success, but stash count changed.");
+            }
+            Logger.WriteLine("Done." + Environment.NewLine);
+            return results;
+
         }
 
         public IGitStashResults ApplyStash(IGitStashApplyOptions options, int index)
         {
-       
-                int count = repo.Stashes.Count();
-                CheckForValidStashIndex(index, repo);
-                if(UntrackedFileChanges(index,repo))
-                    return new GitStashResultsFailure();
-                StashApplyOptions sao = new StashApplyOptions();
-                sao.ApplyModifiers = (options.Index ? StashApplyModifiers.ReinstateIndex : 0);
-                StashApplyStatus status = repo.Stashes.Apply(index,sao);
-                GitStashResults results = new GitStashResults(status);
-                if (repo.Stashes.Count() != count && results.Success)
-                    throw new GitStashException("Command apply was called and reported success, but stash count changed.");
-                return results;
-         
+            int count = repo.Stashes.Count();
+            Logger.WriteLine("Apllying stash: " + index);
+            CheckForValidStashIndex(index, repo);
+            if (UntrackedFileChanges(index, repo))
+            {
+                Logger.WriteLine("There are changes in your working directory, aborting.");
+                return new GitStashResultsFailure();
+            }
+            StashApplyOptions sao = new StashApplyOptions();
+            sao.ApplyModifiers = (options.Index ? StashApplyModifiers.ReinstateIndex : 0);
+            StashApplyStatus status = repo.Stashes.Apply(index, sao);
+            GitStashResults results = new GitStashResults(status);
+            if (repo.Stashes.Count() != count && results.Success)
+            {
+                Logger.WriteLine("Failed.");
+                throw new GitStashException("Command apply was called and reported success, but stash count changed.");
+            }
+            Logger.WriteLine("Done." + Environment.NewLine);
+            return results;
+
         }
 
         public IGitStashResults SaveStash(IGitStashSaveOptions options)
         {
-        
-                int count = repo.Stashes.Count();
-                if (!repo.RetrieveStatus().IsDirty)
-                {
-                    return new GitStashResults(null);
-                }
-                StashModifiers sm = (options.KeepIndex ? StashModifiers.KeepIndex : 0);
-                sm |= (options.Untracked ? StashModifiers.IncludeUntracked : 0);
-                sm |= (options.Ignored ? StashModifiers.IncludeIgnored : 0);
-                Stash stash = repo.Stashes.Add(Stasher, options.Message, sm);
-                GitStashResults results = new GitStashResults(stash);
-                if (repo.Stashes.Count() <= count && results.Success)
-                    throw new GitStashException("Command save was called and reported success, but stash didn't increase.");
-                return results;
-       
+            Logger.WriteLine("Saving stash: " + options.Message);
+            int count = repo.Stashes.Count();
+            if (!repo.RetrieveStatus().IsDirty)
+            {
+                Logger.WriteLine("Nothing to save.");
+                return new GitStashResults(null);
+            }
+            StashModifiers sm = (options.KeepIndex ? StashModifiers.KeepIndex : 0);
+            sm |= (options.Untracked ? StashModifiers.IncludeUntracked : 0);
+            sm |= (options.Ignored ? StashModifiers.IncludeIgnored : 0);
+            Stash stash = repo.Stashes.Add(Stasher, options.Message, sm);
+            GitStashResults results = new GitStashResults(stash);
+            if (repo.Stashes.Count() <= count && results.Success)
+            {
+                Logger.WriteLine("Failed.");
+                throw new GitStashException("Command save was called and reported success, but stash didn't increase.");
+        }
+            Logger.WriteLine("Done." + Environment.NewLine);
+            return results;
+
         }
 
         public IGitStashResults DropStash(IGitStashDropOptions options, int index)
         {
-           
-                CheckForValidStashIndex(index, repo);
-                int count = repo.Stashes.Count();
-                repo.Stashes.Remove(index);
-                if(repo.Stashes.Count() < count)
-                    return new GitStashResultsSuccess();
-                else
-                    return new GitStashResultsFailure();
-            
+            Logger.WriteLine("Deleting stash: " + index);
+            CheckForValidStashIndex(index, repo);
+            int count = repo.Stashes.Count();
+            repo.Stashes.Remove(index);
+            if (repo.Stashes.Count() < count)
+            {
+                Logger.WriteLine("Done." + Environment.NewLine);
+                return new GitStashResultsSuccess();
+            }
+            else
+            {
+                Logger.WriteLine("Failed.");
+                return new GitStashResultsFailure();
+            }
+
         }
-        
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         private Signature Stasher
         {
             get
             {
-                if(stasher == null)
+                if (stasher == null)
                 {
-                    stasher = new Signature(new Identity(GetUserNameVS14(),GetUserEmailAddressVS14()), DateTimeOffset.Now.AddDays(365));
+                    stasher = new Signature(new Identity(GetUserNameVS14(), GetUserEmailAddressVS14()), DateTimeOffset.Now.AddDays(365));
                 }
                 return stasher;
             }
@@ -191,6 +215,8 @@ namespace GitWrapper
                 return "";
             }
         }
+
+        public IOutputLogger Logger { get; private set; }
 
         private bool UntrackedFileChanges(int index, Repository repo)
         {
