@@ -12,21 +12,40 @@ namespace GitStash
 {
     public class PageViewModel : INotifyPropertyChanged
     {
-        private static IGitExt gitService;   
+        IGitStashWrapper wrapper;
 
-        public PageViewModel(IGitExt gitExt)
+        public PageViewModel(IGitStashWrapper wrapper)
         {
-           gitService = gitExt;
+            this.wrapper = wrapper;
             SelectBranchCommand = new RelayCommand(p => SelectBranch(), p => CanSelectBranch);
+            SelectChangesCommand = new RelayCommand(p => SelectChanges(), p => CanSelectChanges);
+            wrapper.StashesChangedEvent += Wrapper_StashesChangedEvent;
+            CanSelectChanges = wrapper.WorkingDirHasChanges();
         }
+
+        private void Wrapper_StashesChangedEvent(object sender, StashesChangedEventArgs e)
+        {
+            CanSelectChanges = true;
+            OnPropertyChanged("SelectChangesCommand");
+            OnPropertyChanged("ChangesText");
+        }
+
+        private void SelectChanges()
+        {
+            StashPage.ShowPage(TeamExplorerPageIds.GitChanges);
+        }
+
+        public bool CanSelectChanges { get; private set; }
+
+        public string ChangesText { get { return wrapper.WorkingDirHasChanges() ? "Changes" : "No changes available"; } }
+
+        public RelayCommand SelectChangesCommand { get; set; }
 
         public string CurrentBranch
         {
             get
             {
-                if(gitService.ActiveRepositories.FirstOrDefault() != null)
-                    return gitService.ActiveRepositories.FirstOrDefault().CurrentBranch.Name;
-                return "";
+                return wrapper.CurrentBranch;
             }
         }
 

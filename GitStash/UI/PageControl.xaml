@@ -18,10 +18,16 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="6">
+    <StackPanel Orientation="Vertical">
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="6">
             <TextBlock>Branch:</TextBlock>
-            <teamExplorer:TextLink x:Uid="selectBranch" VerticalAlignment="Center" Margin="6,0,0,0" Text="{Binding Path=CurrentBranch}"
+            <teamExplorer:TextLink x:Uid="selectBranch" VerticalAlignment="Center" Margin="6,0,0,0" Text="{Binding CurrentBranch}"
                           Localization.Attributes="Text (Modifiable Readable Text)"
                           Command="{Binding Path=SelectBranchCommand}"/>
+
+        </StackPanel>
+        <teamExplorer:TextLink x:Uid="selectBranch" VerticalAlignment="Center" Margin="6,0,0,0" Text="{Binding ChangesText}"
+                          Localization.Attributes="Text (Modifiable Readable Text)"
+                          Command="{Binding Path=SelectChangesCommand}"/>
     </StackPanel>
 </UserControl>

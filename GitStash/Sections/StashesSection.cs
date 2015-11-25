@@ -18,13 +18,15 @@ namespace GitStash.Sections
     public class StashesSection : TeamExplorerBaseSection
     {
         StashesViewModel vm;
+        private IGitStashWrapper wrapper;
 
-        [ImportingConstructor]
-        public StashesSection(IGitStashWrapper wrapper)
+        public override void Initialize(object sender, SectionInitializeEventArgs e)
         {
+            base.Initialize(sender, e);
+            this.wrapper = GetService<IGitStashWrapper>();
             vm = new StashesViewModel(wrapper);
             vm.PropertyChanged += StashesPropertyChanged;
-            Title = String.Format("Stashes({0})",vm.Stashes.Count());
+            Title = String.Format("Stashes({0})", vm.Stashes.Count());
             IsVisible = true;
             SectionContent = new StashesControl(vm);
         }

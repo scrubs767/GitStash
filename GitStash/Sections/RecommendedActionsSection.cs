@@ -13,15 +13,10 @@ namespace GitStash.Sections
     {
         private IGitStashWrapper wrapper;
 
-        [ImportingConstructor]
-        public RecommendedActionsSection(IGitStashWrapper wrapper)
-        {
-            this.wrapper = wrapper;
-        }
-
         public override void Initialize(object sender, SectionInitializeEventArgs e)
         {
             base.Initialize(sender, e);
+            this.wrapper = GetService<IGitStashWrapper>();            
             SectionContent = new RecommendedActionsControl(new RecommendedActionsViewModel(wrapper));
             Title = "Create Stash";
             IsVisible = true;
