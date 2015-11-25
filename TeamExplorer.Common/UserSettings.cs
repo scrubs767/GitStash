@@ -6,7 +6,7 @@ namespace TeamExplorer.Common
 {
     public static class UserSettings
     {
-        private const string CollectionPath = "GitStash";
+        private const string CollectionPath = "Git Stash";
         public static IServiceProvider ServiceProvider { get; set; }
 
 

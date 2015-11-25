@@ -182,6 +182,16 @@ namespace GitWrapper
             }
         }
 
+        public string CurrentBranch
+        {
+            get
+            {
+                if (repo != null && repo.Head != null)
+                    return repo.Head.FriendlyName;
+                return "";
+            }
+        }
+
         private bool UntrackedFileChanges(int index, Repository repo)
         {
             Stash stash = repo.Stashes.ElementAt(index);

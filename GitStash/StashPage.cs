@@ -11,6 +11,7 @@ using GitStash.UI;
 using System.Windows.Threading;
 using GitStash.Properties;
 using GitWrapper;
+using Microsoft.VisualStudio.TeamFoundation.Git.Extensibility;
 
 namespace GitStash
 {
@@ -21,20 +22,19 @@ namespace GitStash
     {
         private static ITeamExplorer teamExplorer;
         private static IVsOutputWindowPane outputWindow;
-        private IServiceProvider serviceProvider;
-        private IGitStashWrapper wrapper;
+        private IGitExt gitExt;
 
         [ImportingConstructor]
         public StashPage([Import(typeof(SVsServiceProvider))] IServiceProvider serviceProvider)
         {
-           Title = "GitStash";
+           Title = "Git Stash";
             teamExplorer = (ITeamExplorer)serviceProvider.GetService(typeof(ITeamExplorer));
-            wrapper = (IGitStashWrapper)serviceProvider.GetService(typeof(IGitStashWrapper));
+            gitExt = (IGitExt)serviceProvider.GetService(typeof(IGitExt));
             var outWindow = Package.GetGlobalService(typeof(SVsOutputWindow)) as IVsOutputWindow;
             var customGuid = new Guid("D9B93453-B887-407F-99EC-66C6FD5CA84C");
-            outWindow.CreatePane(ref customGuid, "GitStash", 1, 1);
+            outWindow.CreatePane(ref customGuid, "Git Stash", 1, 1);
             outWindow.GetPane(ref customGuid, out outputWindow);
-            PageContent = new PageControl(new PageViewModel(wrapper));
+            PageContent = new PageControl(new PageViewModel(gitExt));
             
         }
 

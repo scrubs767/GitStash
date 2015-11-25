@@ -6,6 +6,7 @@ namespace GitWrapper
     public interface IGitStashWrapper
     {
         IList<IGitStash> Stashes { get; }
+        string CurrentBranch { get; }
 
         event PropertyChangedEventHandler PropertyChanged;
 

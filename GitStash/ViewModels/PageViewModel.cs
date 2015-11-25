@@ -12,14 +12,11 @@ namespace GitStash
 {
     public class PageViewModel : INotifyPropertyChanged
     {
-        private static IGitExt gitService;
-        private IGitStashWrapper wrapper;
+        private static IGitExt gitService;   
 
-        
-
-        public PageViewModel(IGitStashWrapper wrapper)
+        public PageViewModel(IGitExt gitExt)
         {
-           this. wrapper = wrapper;
+           gitService = gitExt;
             SelectBranchCommand = new RelayCommand(p => SelectBranch(), p => CanSelectBranch);
         }
 
@@ -27,10 +24,9 @@ namespace GitStash
         {
             get
             {
-                if (gitService != null)
+                if(gitService.ActiveRepositories.FirstOrDefault() != null)
                     return gitService.ActiveRepositories.FirstOrDefault().CurrentBranch.Name;
-
-                return "no current branch";
+                return "";
             }
         }
 
