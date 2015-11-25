@@ -8,24 +8,26 @@ namespace GitStash.ViewModels
     {
        // private static IGitExt gitService;
         private IGitStashWrapper wrapper;
+        private string _newStashMessage = "";
+        bool stashAll = false;
+        bool stashUntracked = false;
+        bool stashIgnored = false;
 
         public RecommendedActionsViewModel(IGitStashWrapper wrapper)
         {
             this.wrapper = wrapper;
             wrapper.StashesChangedEvent += GitService_PropertyChanged;
-            CreateStashButtonCommand = new RelayCommand(p => OnClickCreateStashButton(), p => CanClickCreateStashButton);
+            CreateStashButtonCommand = new RelayCommand(p => OnClickCreateStashButton(), p => CanClickCreateButton);
             NewStashMessage = "";
         }
 
         private void GitService_PropertyChanged(object sender, StashesChangedEventArgs e)
         {
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CanSelectBranch"));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CreateStashNameEnabled"));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CreateStashButtonEnabled"));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CanClickCreateStashButton"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CanCreateStash"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CanClickCreateButton"));
         }
 
-        private string _newStashMessage = "";
+        
         public string NewStashMessage
         {
             get { return _newStashMessage; }
@@ -39,22 +41,20 @@ namespace GitStash.ViewModels
             }
         }
         
-        public bool CreateStashNameEnabled { get { return wrapper.WorkingDirHasChanges(); } }
-
-
         public bool StashKeepIndex { get; set; }
 
-        bool stashAll = false;
-        bool stashUntracked = false;
-        bool stashIgnored = false;
-
-
-        
         public RelayCommand CreateStashButtonCommand { get; private set; }
-        public bool CanClickCreateStashButton
+
+        public bool CanCreateStash
+        {
+            get { return wrapper.WorkingDirHasChanges(); }
+        }
+
+        public bool CanClickCreateButton
         {
             get { return wrapper.WorkingDirHasChanges() && NewStashMessage.Length > 0; }
         }
+
         public bool StashAll
         {
             get
@@ -136,11 +136,6 @@ namespace GitStash.ViewModels
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        public void Update()
-        {
-            OnPropertyChanged("CurrentBranch");
         }
     }
 }

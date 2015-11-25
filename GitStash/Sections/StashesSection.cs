@@ -18,7 +18,6 @@ namespace GitStash.Sections
     public class StashesSection : TeamExplorerBaseSection
     {
         StashesViewModel vm;
-        IGitStashWrapper wrapper;
 
         [ImportingConstructor]
         public StashesSection(IGitStashWrapper wrapper)
