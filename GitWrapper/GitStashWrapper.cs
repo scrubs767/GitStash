@@ -204,6 +204,7 @@ namespace GitWrapper
                 throw new GitStashException("Command save was called and reported success, but stash didn't increase.");
         }
             Logger.WriteLine("Done." + Environment.NewLine);
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Stahses"));
             return results;
 
         }
