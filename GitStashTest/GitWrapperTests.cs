@@ -8,6 +8,8 @@ using Microsoft.VisualStudio.TeamFoundation.Git.Extensibility;
 using Moq;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using EnvDTE80;
+using System.ComponentModel.Composition.Hosting;
 
 namespace GitStash
 {
@@ -52,7 +54,35 @@ namespace GitStash
 
         private void S_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            
+
+        }
+
+        private IServiceProvider GetServiceProvider()
+        {
+            var service = new Mock<IServiceProvider>();
+            var dte = new Mock<DTE2>();
+            var events = new Mock<EnvDTE.Events>();
+            var docEvents = new Mock<EnvDTE.DocumentEvents>();
+            var document = new Mock<EnvDTE.Document>();
+            service.Setup(s => s.GetService(It.IsAny<Type>())).Returns(dte.Object);
+
+            dte.Setup(d => d.Events).Returns(events.Object);
+
+            events.Setup(c => c.get_DocumentEvents(null)).Returns(docEvents.Object);
+            docEvents.Raise(d => d.DocumentSaved += D_DocumentSaved, document.Object);
+            return service.Object;
+        }
+
+        private void D_DocumentSaved(EnvDTE.Document Document)
+        {
+
+        }
+
+        private IOutputLogger GetLogger()
+        {
+            Mock<IOutputLogger> logger = new Mock<IOutputLogger>();
+            logger.Setup(l => l.WriteLine(It.IsAny<string>()));
+            return logger.Object;
         }
 
         [TestMethod]
@@ -60,7 +90,7 @@ namespace GitStash
         {
             FileStream fs = File.Create(@"test\file2");
             fs.Close();
-            IGitStashWrapper git = new IGitStashWrapper(GitExt());
+            GitStashWrapper git = new GitStashWrapper("test", GetLogger());
             IEnumerable<IGitStash> stashes = git.Stashes;
             GitStashOptions options = new GitStashOptions { Untracked = true };
             options.Message = "Testing";
@@ -76,7 +106,7 @@ namespace GitStash
         {
             FileStream fs = File.Create(@"test\file2");
             fs.Close();
-            IGitStashWrapper git = new IGitStashWrapper(GitExt());
+            GitStashWrapper git = new GitStashWrapper("test", GetLogger());
             IEnumerable<IGitStash> stashes = git.Stashes;
             GitStashOptions options = new GitStashOptions { Untracked = true };
             options.Message = "Testing";
@@ -94,7 +124,7 @@ namespace GitStash
         {
             FileStream fs = File.Create(@"test\file2");
             fs.Close();
-            IGitStashWrapper git = new IGitStashWrapper(GitExt());
+            GitStashWrapper git = new GitStashWrapper("test", GetLogger());
             GitStashOptions options = new GitStashOptions { Untracked = true };
             options.Message = "Testing";
             IGitStashResults results = git.SaveStash(options);
@@ -113,7 +143,7 @@ namespace GitStash
         {
             FileStream fs = File.Create(@"test\file2");
             fs.Close();
-            IGitStashWrapper git = new IGitStashWrapper(GitExt());
+            GitStashWrapper git = new GitStashWrapper("test", GetLogger());
             GitStashOptions options = new GitStashOptions { Untracked = true };
             options.Message = "Testing";
             IGitStashResults results = git.SaveStash(options);
@@ -132,7 +162,7 @@ namespace GitStash
         {
             File.WriteAllText(@"test\file1", "This is a test");
 
-            IGitStashWrapper git = new IGitStashWrapper(GitExt());
+            GitStashWrapper git = new GitStashWrapper("test", GetLogger());
             GitStashOptions options = new GitStashOptions { Untracked = true };
             options.Message = "Testing";
             IGitStashResults results = git.SaveStash(options);
@@ -157,7 +187,7 @@ namespace GitStash
         {
             File.WriteAllText(@"test\file1", "This is a test");
 
-            IGitStashWrapper git = new IGitStashWrapper(GitExt());
+            GitStashWrapper git = new GitStashWrapper("test", GetLogger());
             GitStashOptions options = new GitStashOptions { Untracked = true };
             options.Message = "Testing";
             IGitStashResults results = git.SaveStash(options);
@@ -183,7 +213,7 @@ namespace GitStash
         {
             File.WriteAllText(@"test\file1", "This is a test");
 
-            IGitStashWrapper git = new IGitStashWrapper(GitExt());
+            GitStashWrapper git = new GitStashWrapper("test", GetLogger());
             GitStashOptions options = new GitStashOptions { Untracked = true };
             options.Message = "Testing";
             IGitStashResults results = git.SaveStash(options);
@@ -209,7 +239,7 @@ namespace GitStash
         {
             FileStream fs = File.Create(@"test\file2");
             fs.Close();
-            IGitStashWrapper git = new IGitStashWrapper(GitExt());
+            GitStashWrapper git = new GitStashWrapper("test", GetLogger());
             GitStashOptions options = new GitStashOptions { Untracked = true };
             options.Message = "Testing";
             IGitStashResults results = git.SaveStash(options);
@@ -229,7 +259,7 @@ namespace GitStash
         {
             FileStream fs = File.Create(@"test\file2");
             fs.Close();
-            IGitStashWrapper git = new IGitStashWrapper(GitExt());
+            GitStashWrapper git = new GitStashWrapper("test", GetLogger());
             GitStashOptions options = new GitStashOptions { Untracked = true };
             options.Message = "Testing";
             IGitStashResults results = git.SaveStash(options);
@@ -249,7 +279,7 @@ namespace GitStash
         {
             FileStream fs = File.Create(@"test\file2");
             fs.Close();
-            IGitStashWrapper git = new IGitStashWrapper(GitExt());
+            GitStashWrapper git = new GitStashWrapper("test", GetLogger());
             GitStashOptions options = new GitStashOptions { Untracked = true };
             options.Message = "Testing";
             IGitStashResults results = git.SaveStash(options);
@@ -269,7 +299,7 @@ namespace GitStash
             FileStream fs = File.Create(@"test\file2");
             fs.Close();
 
-            IGitStashWrapper git = new IGitStashWrapper(GitExt());
+            GitStashWrapper git = new GitStashWrapper("test", GetLogger());
             GitStashOptions options = new GitStashOptions { Untracked = true };
             options.Message = "one";
             IGitStashResults results = git.SaveStash(options);

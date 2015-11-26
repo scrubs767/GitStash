@@ -17,10 +17,11 @@ namespace GitWrapper
     {
         private IGitExt gitService;
         private Repository repo;
-        private Lazy<DTE2> dte;
-        private Lazy<RunningDocumentTable> rdt;
-        private Lazy<EnvDTE.Events> events;
-        private Lazy<EnvDTE.DocumentEvents> documentEvents;
+        //private Lazy<DTE2> dte;
+        //private Lazy<RunningDocumentTable> rdt;
+        //private Lazy<EnvDTE.Events> events;
+        //private Lazy<EnvDTE.DocumentEvents> documentEvents;
+        private DocumentEvents documentEvents;
         private Signature stasher = null;
         private Lazy<SolutionEvents> solutionEvents;
 
@@ -36,12 +37,32 @@ namespace GitWrapper
             OnStashesChanged(new StashesChangedEventArgs());
         }
 
+        //sigh, for testing only
+        public GitStashWrapper(string dir, IOutputLogger logger)
+        {
+            this.Logger = logger;
+            try
+            {
+                repo = new Repository(dir);
+            }
+            catch (Exception ex)
+            {
+                throw new GitStashException(ex);
+            }
+        }
+
+        //I need to figure out how to mock all this DTE stuff for testing
         public GitStashWrapper(IServiceProvider serviceProvider, IOutputLogger logger)
         {
-            dte = new Lazy<DTE2>(() => ServiceProvider.GlobalProvider.GetService(typeof(EnvDTE.DTE)) as DTE2);
-            events = new Lazy<EnvDTE.Events>(() => dte.Value.Events);
-            documentEvents = new Lazy<EnvDTE.DocumentEvents>(() => events.Value.DocumentEvents);
-            documentEvents.Value.DocumentSaved += DocumentEvents_DocumentSaved;
+            //dte = new Lazy<DTE2>(() => ServiceProvider.GlobalProvider.GetService(typeof(EnvDTE.DTE)) as DTE2);
+            //dte = new Lazy<DTE2>(() => serviceProvider.GetService(typeof(EnvDTE.DTE)) as DTE2);
+            //events = new Lazy<EnvDTE.Events>(() => dte.Value.Events);
+            //documentEvents = new Lazy<EnvDTE.DocumentEvents>(() => events.Value.DocumentEvents);
+            //documentEvents.Value.DocumentSaved += DocumentEvents_DocumentSaved;
+
+            var dte = (DTE)serviceProvider.GetService(typeof(EnvDTE.DTE));
+            documentEvents = dte.Events.DocumentEvents;
+            documentEvents.DocumentSaved += DocumentEvents_DocumentSaved;
 
             this.Logger = logger;
 
@@ -101,6 +122,19 @@ namespace GitWrapper
             }
         }
 
+        private void LogFilesInStash(Stash stash)
+        {
+            Tree commitTree = stash.WorkTree.Tree;
+            IList<string> paths = commitTree.Select(t => t.Path).ToList();
+            DiffTargets dt = DiffTargets.WorkingDirectory;
+            var patch = repo.Diff.Compare<TreeChanges>(commitTree, dt,paths);
+
+            foreach (var ptc in patch)
+            {
+                Logger.WriteLine(ptc.Status + " -> " + ptc.Path); // Status -> File Path
+            }
+        }
+
         public IGitStashResults PopStash(IGitStashPopOptions options, int index)
         {
             Logger.WriteLine("Apllying stash: " + index);
@@ -115,7 +149,7 @@ namespace GitWrapper
             sao.ApplyModifiers = (options.Index ? StashApplyModifiers.ReinstateIndex : 0);
             StashApplyStatus status = repo.Stashes.Pop(index, sao);
             GitStashResults results = new GitStashResults(status);
-            if (repo.Stashes.Count() != count && results.Success)
+            if (repo.Stashes.Count() >= count && results.Success)
             {
                 Logger.WriteLine("Failed.");
                 throw new GitStashException("Command apply and delete was called, reported success, but stash count changed.");
@@ -162,6 +196,7 @@ namespace GitWrapper
             sm |= (options.Untracked ? StashModifiers.IncludeUntracked : 0);
             sm |= (options.Ignored ? StashModifiers.IncludeIgnored : 0);
             Stash stash = repo.Stashes.Add(Stasher, options.Message, sm);
+            LogFilesInStash(stash);
             GitStashResults results = new GitStashResults(stash);
             if (repo.Stashes.Count() <= count && results.Success)
             {
