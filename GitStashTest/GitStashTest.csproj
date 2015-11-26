@@ -7,8 +7,8 @@
     <ProjectGuid>{A5E30886-5711-42BE-9211-C1D9911A92D9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GitStash</RootNamespace>
-    <AssemblyName>GitStash</AssemblyName>
+    <RootNamespace>GitStashTest</RootNamespace>
+    <AssemblyName>GitStashTest</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -70,15 +70,22 @@
     </When>
     <Otherwise>
       <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
+        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework">
+          <Private>False</Private>
+        </Reference>
       </ItemGroup>
     </Otherwise>
   </Choose>
   <ItemGroup>
     <Compile Include="GitWrapperTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StashViewModelTest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GitStash\GitStash.csproj">
+      <Project>{6c22f70f-ed3a-45f8-9d30-23f48e13e75a}</Project>
+      <Name>GitStash</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GitWrapper\GitWrapper.csproj">
       <Project>{3835615a-a669-455a-8bdc-3f23f390443e}</Project>
       <Name>GitWrapper</Name>

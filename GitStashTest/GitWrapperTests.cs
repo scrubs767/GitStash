@@ -11,7 +11,7 @@ using System.ComponentModel;
 using EnvDTE80;
 using System.ComponentModel.Composition.Hosting;
 
-namespace GitStash
+namespace GitStashTest
 {
     [TestClass]
     public class GitWrapperTests

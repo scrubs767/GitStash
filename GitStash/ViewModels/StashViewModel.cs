@@ -17,17 +17,8 @@ namespace GitStash.ViewModels
 
         private IGitStash stash;
         private IGitStashWrapper wrapper;
-
         public event PropertyChangedEventHandler PropertyChanged;
-
-        protected virtual void OnAfterDeleted()
-        {
-            if (AfterDelete != null)
-            {
-                AfterDelete(this, new AfterDeleteStashEventArgs());
-            }
-        }
-
+        
         public StashViewModel(IGitStashWrapper wrapper, IGitStash stash)
         {
             this.stash = stash;
@@ -36,7 +27,13 @@ namespace GitStash.ViewModels
             ApplyDropDownCommand = new RelayCommand(p => OnClickApplyStash(), p => AlwaysTrueCanDropDown);
             DeleteDropDownCommand = new RelayCommand(p => OnClickDropStash(), p => AlwaysTrueCanDropDown);
         }
-
+        protected virtual void OnAfterDeleted()
+        {
+            if (AfterDelete != null)
+            {
+                AfterDelete(this, new AfterDeleteStashEventArgs());
+            }
+        }
         private void OnClickPopStash()
         {
             wrapper.PopStash(new GitStashOptions(), stash.Index);
@@ -56,6 +53,6 @@ namespace GitStash.ViewModels
         public RelayCommand DeleteDropDownCommand { get; set; }
         public bool AlwaysTrueCanDropDown { get { return true; } }
 
-        public string DisplayString {get{ return String.Format("stash{{{0}}}:{1}", stash.Index, stash.Message); }}
+        public string DisplayString {get{ return String.Format("stash{{{0}}}: {1}", stash.Index, stash.Message); }}
     }
 }
