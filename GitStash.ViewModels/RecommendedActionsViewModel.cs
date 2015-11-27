@@ -1,4 +1,5 @@
 ﻿using GitWrapper;
+using Microsoft.TeamFoundation.MVVM;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -27,18 +28,7 @@ namespace GitStash.ViewModels
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CanClickCreateButton"));
         }
         
-        public string NewStashMessage
-        {
-            get { return _newStashMessage; }
-            set
-            {
-                _newStashMessage = value;
-                //CanClickCreateStashButton = wrapper.WorkingDirHasChanges() && NewStashMessage.Length > 0;
-                //if (PropertyChanged != null)
-                //    PropertyChanged(this, new PropertyChangedEventArgs("CreateStashButtonCommand"));
-
-            }
-        }
+        public string NewStashMessage { get; set; }
         
         public bool StashKeepIndex { get; set; }
 
@@ -117,12 +107,13 @@ namespace GitStash.ViewModels
         private void OnClickCreateStashButton()
         {
             IGitStashSaveOptions options = new GitStashOptions { All = StashAll, Ignored = StashIgnored, KeepIndex = StashKeepIndex, Untracked = StashUntracked, Message = NewStashMessage };
-            if (wrapper.SaveStash(options).Success)
+            IGitStashResults results = wrapper.SaveStash(options);
+            if (results.Success)
             {
                 NewStashMessage = "";
-                PropertyChanged(this, new PropertyChangedEventArgs("Stashes"));
-                PropertyChanged(this, new PropertyChangedEventArgs("NewStashMessage"));
-                PropertyChanged(this, new PropertyChangedEventArgs("CreateStashButtonCommand"));
+                OnPropertyChanged("Stashes");
+                OnPropertyChanged("NewStashMessage");
+                OnPropertyChanged("CreateStashButtonCommand");
             }
             else
             {

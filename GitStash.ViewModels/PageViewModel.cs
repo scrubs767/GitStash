@@ -8,6 +8,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TeamFoundation.Git.Extensibility;
 using GitWrapper;
 using GitStash.Common;
+using Microsoft.TeamFoundation.MVVM;
 
 namespace GitStash
 {

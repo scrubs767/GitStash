@@ -1,5 +1,6 @@
 ﻿using GitWrapper;
 using Microsoft.TeamFoundation.Controls.WPF.TeamExplorer;
+using Microsoft.TeamFoundation.MVVM;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
