@@ -11,6 +11,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitStashTest", "GitStashTes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitStash", "GitStash\GitStash.csproj", "{6C22F70F-ED3A-45F8-9D30-23F48E13E75A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTestMetrics", "UnitTestMetrics", "{74EBB0E3-E5FC-476F-8661-D9A8FDA9CADA}"
+	ProjectSection(SolutionItems) = preProject
+		Coverage.runsettings = Coverage.runsettings
+		GenerateUnitTestMetrics.bat = GenerateUnitTestMetrics.bat
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitStash.ViewModels", "GitStash.ViewModels\GitStash.ViewModels.csproj", "{A80D441B-DAA0-431D-AFFA-C4B900B9EF64}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitStash.Common", "GitStash.Common\GitStash.Common.csproj", "{956E2932-C013-49C2-8AAC-40A4B674CE75}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -60,6 +70,26 @@ Global
 		{6C22F70F-ED3A-45F8-9D30-23F48E13E75A}.VS2015 Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C22F70F-ED3A-45F8-9D30-23F48E13E75A}.VS2015|Any CPU.ActiveCfg = Release|Any CPU
 		{6C22F70F-ED3A-45F8-9D30-23F48E13E75A}.VS2015|Any CPU.Build.0 = Release|Any CPU
+		{A80D441B-DAA0-431D-AFFA-C4B900B9EF64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A80D441B-DAA0-431D-AFFA-C4B900B9EF64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A80D441B-DAA0-431D-AFFA-C4B900B9EF64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A80D441B-DAA0-431D-AFFA-C4B900B9EF64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A80D441B-DAA0-431D-AFFA-C4B900B9EF64}.VS2013|Any CPU.ActiveCfg = Release|Any CPU
+		{A80D441B-DAA0-431D-AFFA-C4B900B9EF64}.VS2013|Any CPU.Build.0 = Release|Any CPU
+		{A80D441B-DAA0-431D-AFFA-C4B900B9EF64}.VS2015 Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A80D441B-DAA0-431D-AFFA-C4B900B9EF64}.VS2015 Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A80D441B-DAA0-431D-AFFA-C4B900B9EF64}.VS2015|Any CPU.ActiveCfg = Release|Any CPU
+		{A80D441B-DAA0-431D-AFFA-C4B900B9EF64}.VS2015|Any CPU.Build.0 = Release|Any CPU
+		{956E2932-C013-49C2-8AAC-40A4B674CE75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{956E2932-C013-49C2-8AAC-40A4B674CE75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{956E2932-C013-49C2-8AAC-40A4B674CE75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{956E2932-C013-49C2-8AAC-40A4B674CE75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{956E2932-C013-49C2-8AAC-40A4B674CE75}.VS2013|Any CPU.ActiveCfg = Release|Any CPU
+		{956E2932-C013-49C2-8AAC-40A4B674CE75}.VS2013|Any CPU.Build.0 = Release|Any CPU
+		{956E2932-C013-49C2-8AAC-40A4B674CE75}.VS2015 Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{956E2932-C013-49C2-8AAC-40A4B674CE75}.VS2015 Debug|Any CPU.Build.0 = Debug|Any CPU
+		{956E2932-C013-49C2-8AAC-40A4B674CE75}.VS2015|Any CPU.ActiveCfg = Release|Any CPU
+		{956E2932-C013-49C2-8AAC-40A4B674CE75}.VS2015|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

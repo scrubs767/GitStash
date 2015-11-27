@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using GitWrapper;
 using Moq;
+using System.Threading;
 
 namespace GitStashTest
 {
@@ -40,15 +41,20 @@ namespace GitStashTest
             var wrapper = new Mock<IGitStashWrapper>();
             var results = new Mock<IGitStashResults>();
             results.Setup(r => r.Success).Returns(true);
+
+            AutoResetEvent waitHandle = new AutoResetEvent(false);
+
             wrapper.Setup(w => w.PopStash(
                 It.IsAny<IGitStashPopOptions>(),
                 It.Is<int>(i => i == 0)))
+                .Callback(() => waitHandle.Set())
                 .Returns(results.Object)
                 .Verifiable();
 
             GitStash.ViewModels.StashViewModel vm = new GitStash.ViewModels.StashViewModel(wrapper.Object, stash.Object);
             Assert.IsTrue(vm.PopDropDownCommand != null);
             vm.PopDropDownCommand.Execute(null);
+            waitHandle.WaitOne(5000);
             wrapper.Verify(w => w.PopStash(It.IsAny<IGitStashPopOptions>(), 0));
         }
 
@@ -58,15 +64,19 @@ namespace GitStashTest
             var wrapper = new Mock<IGitStashWrapper>();
             var results = new Mock<IGitStashResults>();
             results.Setup(r => r.Success).Returns(true);
+
+            AutoResetEvent waitHandle = new AutoResetEvent(false);
             wrapper.Setup(w => w.ApplyStash(
                 It.IsAny<IGitStashApplyOptions>(),
                 It.Is<int>(i => i == 0)))
+                .Callback(() => waitHandle.Set())
                 .Returns(results.Object)
                 .Verifiable();
 
             GitStash.ViewModels.StashViewModel vm = new GitStash.ViewModels.StashViewModel(wrapper.Object, stash.Object);
             Assert.IsTrue(vm.ApplyDropDownCommand != null);
             vm.PopDropDownCommand.Execute(null);
+            waitHandle.WaitOne(5000);
             wrapper.Verify(w => w.ApplyStash(It.IsAny<IGitStashApplyOptions>(), 0));
         }
 
@@ -76,15 +86,19 @@ namespace GitStashTest
             var wrapper = new Mock<IGitStashWrapper>();
             var results = new Mock<IGitStashResults>();
             results.Setup(r => r.Success).Returns(true);
+
+            AutoResetEvent waitHandle = new AutoResetEvent(false);
             wrapper.Setup(w => w.DropStash(
                 It.IsAny<IGitStashDropOptions>(),
                 It.Is<int>(i => i == 0)))
+                .Callback(() => waitHandle.Set())
                 .Returns(results.Object)
                 .Verifiable();
 
             GitStash.ViewModels.StashViewModel vm = new GitStash.ViewModels.StashViewModel(wrapper.Object, stash.Object);
             Assert.IsTrue(vm.ApplyDropDownCommand != null);
             vm.PopDropDownCommand.Execute(null);
+            waitHandle.WaitOne(5000);
             wrapper.Verify(w => w.DropStash(It.IsAny<IGitStashDropOptions>(), 0));
         }
     }

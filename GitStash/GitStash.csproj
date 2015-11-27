@@ -78,10 +78,6 @@
     <Compile Include="UI\StashPageControl.xaml.cs">
       <DependentUpon>StashPageControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\AfterDeleteStashEventArgs.cs" />
-    <Compile Include="ViewModels\RecommendedActionsViewModel.cs" />
-    <Compile Include="ViewModels\RelayCommand.cs" />
-    <Compile Include="ViewModels\PageViewModel.cs" />
     <Compile Include="StashNavigationItem.cs" />
     <Compile Include="StashPage.cs" />
     <Compile Include="Options\StashOptionsPage.cs">
@@ -91,10 +87,9 @@
       <DependentUpon>StashSettingsPageControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="GitStashPackage.cs" />
-    <Compile Include="ViewModels\StashesViewModel.cs" />
-    <Compile Include="ViewModels\StashViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="Key.snk" />
     <None Include="packages.config" />
     <None Include="source.extension.vsixmanifest">
@@ -237,6 +232,14 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GitStash.Common\GitStash.Common.csproj">
+      <Project>{956e2932-c013-49c2-8aac-40a4b674ce75}</Project>
+      <Name>GitStash.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GitStash.ViewModels\GitStash.ViewModels.csproj">
+      <Project>{a80d441b-daa0-431d-affa-c4b900b9ef64}</Project>
+      <Name>GitStash.ViewModels</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GitWrapper\GitWrapper.csproj">
       <Project>{3835615a-a669-455a-8bdc-3f23f390443e}</Project>
       <Name>GitWrapper</Name>
@@ -274,6 +277,7 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

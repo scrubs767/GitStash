@@ -7,16 +7,19 @@ using Microsoft.VisualStudio.Shell.Interop;
 using System.Linq;
 using Microsoft.VisualStudio.TeamFoundation.Git.Extensibility;
 using GitWrapper;
+using GitStash.Common;
 
 namespace GitStash
 {
     public class PageViewModel : INotifyPropertyChanged
     {
         IGitStashWrapper wrapper;
+        INavigateable page;
 
-        public PageViewModel(IGitStashWrapper wrapper)
+        public PageViewModel(INavigateable page, IGitStashWrapper wrapper)
         {
             this.wrapper = wrapper;
+            this.page = page;
             SelectBranchCommand = new RelayCommand(p => SelectBranch(), p => CanSelectBranch);
             SelectChangesCommand = new RelayCommand(p => SelectChanges(), p => CanSelectChanges);
             wrapper.StashesChangedEvent += Wrapper_StashesChangedEvent;
@@ -32,7 +35,7 @@ namespace GitStash
 
         private void SelectChanges()
         {
-            StashPage.ShowPage(TeamExplorerPageIds.GitChanges);
+            page.ShowPage(TeamExplorerPageIds.GitChanges);
         }
 
         public bool CanSelectChanges { get; private set; }
@@ -51,7 +54,7 @@ namespace GitStash
 
         private void SelectBranch()
         {
-            StashPage.ShowPage(TeamExplorerPageIds.GitBranches);
+            page.ShowPage(TeamExplorerPageIds.GitBranches);
         }
 
         public bool CanSelectBranch

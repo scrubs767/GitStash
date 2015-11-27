@@ -10,6 +10,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using EnvDTE80;
 using System.ComponentModel.Composition.Hosting;
+using LibGit2Sharp;
 
 namespace GitStashTest
 {
@@ -19,10 +20,20 @@ namespace GitStashTest
         [TestInitialize]
         public void Setup()
         {
-            if (Directory.Exists("test"))
-                Directory.Delete("test", true);
+            Directory.CreateDirectory("test");
+            string rootedPath = Repository.Init("test");
+            using (Repository repo = new Repository(rootedPath))
+            {
+                var content = "Commit this!";
+                File.WriteAllText(Path.Combine(repo.Info.WorkingDirectory, "file1"), content);
 
-            ZipFile.ExtractToDirectory("test.zip", ".");
+                repo.Stage("file1");
+
+                Signature author = new Signature("James", "@jugglingnutcase", DateTime.Now);
+                Signature committer = author;
+
+                Commit commit = repo.Commit("Here's a commit i made!", author, committer);
+            }
         }
 
         [TestCleanup]
@@ -179,7 +190,7 @@ namespace GitStashTest
             Assert.IsFalse(results.Success);
             Assert.IsTrue(git.Stashes.Count == 1);
             string txt = File.ReadAllText(@"test\file1");
-            Assert.IsTrue(txt == "This is a test\r\nThis is another test\r\n");
+            Assert.IsTrue(txt == "Commit this!This is another test\r\n");
         }
 
         [TestMethod]
@@ -204,7 +215,7 @@ namespace GitStashTest
             Assert.IsFalse(results.Success);
             Assert.IsTrue(git.Stashes.Count == 1);
             string txt = File.ReadAllText(@"test\file1");
-            Assert.IsTrue(txt == "This is a test\r\nThis is another test\r\n");
+            Assert.IsTrue(txt == "Commit this!This is another test\r\n");
 
         }
 
@@ -230,7 +241,7 @@ namespace GitStashTest
             Assert.IsFalse(results.Success);
             Assert.IsTrue(git.Stashes.Count == 1);
             string txt = File.ReadAllText(@"test\file1");
-            Assert.IsTrue(txt == "This is a test\r\nThis is another test\r\n");
+            Assert.IsTrue(txt == "Commit this!This is another test\r\n");
         }
 
         [TestMethod]

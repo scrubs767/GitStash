@@ -15,13 +15,16 @@ namespace GitStash.ViewModels
         public delegate void AfterDeleteHandler(object source, AfterDeleteStashEventArgs e);
         public event AfterDeleteHandler AfterDelete;
 
-        private IGitStash stash;
+        public IGitStash Stash
+        {
+            get; set;
+        }
         private IGitStashWrapper wrapper;
         public event PropertyChangedEventHandler PropertyChanged;
         
         public StashViewModel(IGitStashWrapper wrapper, IGitStash stash)
         {
-            this.stash = stash;
+            this.Stash = stash;
             this.wrapper = wrapper;
             PopDropDownCommand = new RelayCommand(p => OnClickPopStash(), p => AlwaysTrueCanDropDown);
             ApplyDropDownCommand = new RelayCommand(p => OnClickApplyStash(), p => AlwaysTrueCanDropDown);
@@ -36,16 +39,16 @@ namespace GitStash.ViewModels
         }
         private void OnClickPopStash()
         {
-            wrapper.PopStash(new GitStashOptions(), stash.Index);
+            wrapper.PopStash(new GitStashOptions(), Stash.Index);
             OnAfterDeleted();
         }
         private void OnClickApplyStash()
         {
-            wrapper.ApplyStash(new GitStashOptions(), stash.Index);
+            wrapper.ApplyStash(new GitStashOptions(), Stash.Index);
         }
         private void OnClickDropStash()
         {
-            wrapper.DropStash(new GitStashOptions(), stash.Index);
+            wrapper.DropStash(new GitStashOptions(), Stash.Index);
             OnAfterDeleted();
         }
         public RelayCommand PopDropDownCommand { get; set; }
@@ -53,6 +56,6 @@ namespace GitStash.ViewModels
         public RelayCommand DeleteDropDownCommand { get; set; }
         public bool AlwaysTrueCanDropDown { get { return true; } }
 
-        public string DisplayString {get{ return String.Format("stash{{{0}}}: {1}", stash.Index, stash.Message); }}
+        public string DisplayString {get{ return String.Format("stash{{{0}}}: {1}", Stash.Index, Stash.Message); }}
     }
 }

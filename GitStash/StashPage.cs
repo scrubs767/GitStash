@@ -9,7 +9,7 @@ using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Shell;
 using GitStash.UI;
 using System.Windows.Threading;
-using GitStash.Properties;
+using GitStash.Common;
 using GitWrapper;
 using Microsoft.VisualStudio.TeamFoundation.Git.Extensibility;
 
@@ -18,7 +18,7 @@ namespace GitStash
     
 
     [TeamExplorerPage(GitStashPackage.StashPage, Undockable = true)]
-    public class StashPage : TeamExplorerBasePage
+    public class StashPage : TeamExplorerBasePage, INavigateable
     {
         private static ITeamExplorer teamExplorer;
         private static IVsOutputWindowPane outputWindow;
@@ -42,7 +42,7 @@ namespace GitStash
         {
             base.Initialize(sender, e);
             gitWrapper = GetService<IGitStashWrapper>();
-            PageContent = new PageControl(new PageViewModel(gitWrapper));            
+            PageContent = new PageControl(new PageViewModel(this, gitWrapper));            
         }
 
         public override object GetExtensibilityService(Type serviceType)
@@ -51,7 +51,7 @@ namespace GitStash
                 return gitWrapper;
             return base.GetExtensibilityService(serviceType);
         }
-        public static void ShowPage(string page)
+        public void ShowPage(string page)
         {
             System.Windows.Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background,
                 new Action(() =>

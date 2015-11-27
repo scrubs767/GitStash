@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GitStash.Sections;
 using System.ComponentModel;
 using GitWrapper;
 
@@ -16,6 +12,7 @@ namespace GitStash.ViewModels
         public StashesViewModel(IGitStashWrapper git)
         {
             this.git = git;
+            // I think one of these are redundant
             git.StashesChangedEvent += Git_StashesChangedEvent;
             git.PropertyChanged += Git_PropertyChanged;
         }
