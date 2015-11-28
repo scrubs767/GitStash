@@ -10,7 +10,7 @@ using GitWrapper;
 using GitStash.Common;
 using Microsoft.TeamFoundation.MVVM;
 
-namespace GitStash
+namespace GitStash.ViewModels
 {
     public class PageViewModel : INotifyPropertyChanged
     {

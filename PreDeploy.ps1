@@ -13,6 +13,6 @@ else
 
 $assemblyVersion = 'AssemblyVersion("' +$release + '")]'
 
-$newFile = Get-Content "SharedAssemblyInfo.cs" -encoding "UTF8" 
+$newFile = Get-Content "..\SharedAssemblyInfo.cs" -encoding "UTF8" 
 $newfile = $newfile -replace 'AssemblyVersion.*', $assemblyVersion
-$newfile | set-Content "SharedAssemblyInfo.cs" -encoding "UTF8"
+$newfile | set-Content "..\SharedAssemblyInfo.cs" -encoding "UTF8"
