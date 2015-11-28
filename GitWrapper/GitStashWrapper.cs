@@ -24,6 +24,7 @@ namespace GitWrapper
         private DocumentEvents documentEvents;
         private Signature stasher = null;
         private Lazy<SolutionEvents> solutionEvents;
+        IServiceProvider serviceProvider;
 
         public delegate void StashesChangedEventHandler(object sender, StashesChangedEventArgs e);
         public event StashesChangedEventHandler StashesChangedEvent;
@@ -59,7 +60,7 @@ namespace GitWrapper
             //events = new Lazy<EnvDTE.Events>(() => dte.Value.Events);
             //documentEvents = new Lazy<EnvDTE.DocumentEvents>(() => events.Value.DocumentEvents);
             //documentEvents.Value.DocumentSaved += DocumentEvents_DocumentSaved;
-
+            this.serviceProvider = serviceProvider;
             var dte = (DTE)serviceProvider.GetService(typeof(EnvDTE.DTE));
             documentEvents = dte.Events.DocumentEvents;
             documentEvents.DocumentSaved += DocumentEvents_DocumentSaved;
@@ -81,6 +82,16 @@ namespace GitWrapper
             }
         }
 
+        private bool IsDirtyProjects()
+        {
+            var dte = (DTE)serviceProvider.GetService(typeof(EnvDTE.DTE));
+            foreach(Project proj in dte.Solution.Projects)
+            {
+                if (!proj.Saved)
+                    return true;
+            }
+            return false;
+        }
         private void OnGitServicePropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (gitService == null || gitService.ActiveRepositories.Count() == 0) // ifthis is null we should ever be called
@@ -190,6 +201,11 @@ namespace GitWrapper
 
         public IGitStashResults SaveStash(IGitStashSaveOptions options)
         {
+            if (IsDirtyProjects())
+            {
+                Logger.WriteLine("Your project has not been saved, aborting");
+                return new GitStashResultsFailure();
+            }
             Logger.WriteLine("Saving stash: " + options.Message);
             bool hasChanges = WorkingDirHasChanges();
             int count = repo.Stashes.Count();
