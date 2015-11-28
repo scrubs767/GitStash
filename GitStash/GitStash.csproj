@@ -244,26 +244,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\GitStash.Common\GitStash.Common.csproj">
-      <Project>{956e2932-c013-49c2-8aac-40a4b674ce75}</Project>
-      <Name>GitStash.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\GitStash.ViewModels\GitStash.ViewModels.csproj">
-      <Project>{a80d441b-daa0-431d-affa-c4b900b9ef64}</Project>
-      <Name>GitStash.ViewModels</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\GitWrapper\GitWrapper.csproj">
-      <Project>{3835615a-a669-455a-8bdc-3f23f390443e}</Project>
-      <Name>GitWrapper</Name>
-      <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-      <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
-    </ProjectReference>
-    <ProjectReference Include="..\TeamExplorer.Common\TeamExplorer.Common.csproj">
-      <Project>{388ac013-c628-4a32-abbc-a28a68c3a112}</Project>
-      <Name>TeamExplorer.Common</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Page Include="Resources\Dictionary.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -289,7 +269,24 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\GitStash.Common\GitStash.Common.csproj">
+      <Project>{956e2932-c013-49c2-8aac-40a4b674ce75}</Project>
+      <Name>GitStash.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GitStash.ViewModels\GitStash.ViewModels.csproj">
+      <Project>{a80d441b-daa0-431d-affa-c4b900b9ef64}</Project>
+      <Name>GitStash.ViewModels</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GitWrapper\GitWrapper.csproj">
+      <Project>{3835615a-a669-455a-8bdc-3f23f390443e}</Project>
+      <Name>GitWrapper</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TeamExplorer.Common\TeamExplorer.Common.csproj">
+      <Project>{388ac013-c628-4a32-abbc-a28a68c3a112}</Project>
+      <Name>TeamExplorer.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\VSSDK\Microsoft.VsSDK.targets" Condition="'$(VSToolsPath)' != ''" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
@@ -300,6 +297,10 @@
     <Error Condition="!Exists('..\packages\Microsoft.VSSDK.BuildTools.14.0.23107\build\Microsoft.VSSDK.BuildTools.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.VSSDK.BuildTools.14.0.23107\build\Microsoft.VSSDK.BuildTools.targets'))" />
   </Target>
   <Import Project="..\packages\Microsoft.VSSDK.BuildTools.14.0.23107\build\Microsoft.VSSDK.BuildTools.targets" Condition="Exists('..\packages\Microsoft.VSSDK.BuildTools.14.0.23107\build\Microsoft.VSSDK.BuildTools.targets')" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

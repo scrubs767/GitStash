@@ -2,9 +2,7 @@
 using GitStash.ViewModels;
 using GitWrapper;
 using Microsoft.TeamFoundation.Controls;
-using System.ComponentModel.Composition;
 using TeamExplorer.Common;
-using System;
 
 namespace GitStash.Sections
 {
