@@ -1,0 +1,1 @@
+$release = git branch -list | -replace 'release-([0-9\.\-]+)', '$1'
