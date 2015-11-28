@@ -337,5 +337,19 @@ namespace GitStashTest
             Assert.IsTrue(older.Index == 1);
             Assert.IsTrue(older.Message == "one");
         }
+
+        [TestMethod]
+        public void Bug_57_CreateStashWithNewUntrackedChangeDoesntThrowException()
+        {
+            FileStream fs = File.Create(@"test\file2");
+            fs.Close();
+            GitStashWrapper git = new GitStashWrapper("test", GetLogger());
+            GitStashOptions options = new GitStashOptions { Untracked = false, All=false, Ignored = false, Index = false, KeepIndex = false, Message="bug_57" };
+
+            IGitStashResults results = git.SaveStash(options);
+            Assert.IsFalse(results.Success);
+            Assert.IsTrue(git.Stashes.Count == 0);
+            Assert.IsTrue(File.Exists(@"test\file2"));
+        }
     }
 }

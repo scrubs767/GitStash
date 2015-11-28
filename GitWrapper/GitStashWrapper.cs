@@ -124,10 +124,12 @@ namespace GitWrapper
 
         private void LogFilesInStash(Stash stash)
         {
+            if (stash == null)
+                throw new ArgumentException("stash parameter can not be null");
             Tree commitTree = stash.WorkTree.Tree;
             IList<string> paths = commitTree.Select(t => t.Path).ToList();
             DiffTargets dt = DiffTargets.WorkingDirectory;
-            var patch = repo.Diff.Compare<TreeChanges>(commitTree, dt,paths);
+            var patch = repo.Diff.Compare<TreeChanges>(commitTree, dt, paths);
 
             foreach (var ptc in patch)
             {
@@ -186,6 +188,7 @@ namespace GitWrapper
         public IGitStashResults SaveStash(IGitStashSaveOptions options)
         {
             Logger.WriteLine("Saving stash: " + options.Message);
+            bool hasChanges = WorkingDirHasChanges();
             int count = repo.Stashes.Count();
             if (!repo.RetrieveStatus().IsDirty)
             {
@@ -196,13 +199,24 @@ namespace GitWrapper
             sm |= (options.Untracked ? StashModifiers.IncludeUntracked : 0);
             sm |= (options.Ignored ? StashModifiers.IncludeIgnored : 0);
             Stash stash = repo.Stashes.Add(Stasher, options.Message, sm);
-            LogFilesInStash(stash);
+
             GitStashResults results = new GitStashResults(stash);
             if (repo.Stashes.Count() <= count && results.Success)
             {
                 Logger.WriteLine("Failed.");
                 throw new GitStashException("Command save was called and reported success, but stash didn't increase.");
-        }
+            }
+            if (results.Success == false)
+            {
+                if (stash != null)
+                    LogFilesInStash(stash);
+                if (hasChanges)
+                    Logger.WriteLine("perhaps you have untracked files, and didn't select Untracked.");
+                Logger.WriteLine("Failed.");
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Stahses"));
+                return results;
+            }
+            LogFilesInStash(stash);
             Logger.WriteLine("Done." + Environment.NewLine);
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Stahses"));
             return results;
