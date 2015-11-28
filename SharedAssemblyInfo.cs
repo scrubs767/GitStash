@@ -1,6 +1,4 @@
-using System.Resources;
-using System.Reflection;
-using System.Runtime.CompilerServices;
+﻿using System.Reflection;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyCompany("")]
@@ -8,12 +6,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
 [assembly: ComVisible(false)]
-[assembly: AssemblyVersion("0.1.*")]
-
-#if DEBUG
-[assembly: AssemblyConfiguration("Debug")]
-[assembly: AssemblyDescription("Flavor=Debug")] 
-#else
+[assembly: AssemblyVersion("0.1")]
 [assembly: AssemblyConfiguration("Retail")]
-[assembly: AssemblyDescription("Flavor=Retail")] 
-#endif
+[assembly: AssemblyDescription("Flavor=Retail")]
