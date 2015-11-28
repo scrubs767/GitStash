@@ -151,9 +151,10 @@ namespace GitWrapper
             sao.ApplyModifiers = (options.Index ? StashApplyModifiers.ReinstateIndex : 0);
             StashApplyStatus status = repo.Stashes.Pop(index, sao);
             GitStashResults results = new GitStashResults(status);
+            if (results.Success == false)
+                Logger.WriteLine("There are changes in your working directory, aborting.");
             if (repo.Stashes.Count() >= count && results.Success)
-            {
-                Logger.WriteLine("Failed.");
+            {                
                 throw new GitStashException("Command apply and delete was called, reported success, but stash count changed.");
             }
             Logger.WriteLine("Done." + Environment.NewLine);
@@ -175,6 +176,8 @@ namespace GitWrapper
             sao.ApplyModifiers = (options.Index ? StashApplyModifiers.ReinstateIndex : 0);
             StashApplyStatus status = repo.Stashes.Apply(index, sao);
             GitStashResults results = new GitStashResults(status);
+            if (results.Success == false)
+                Logger.WriteLine("There are changes in your working directory, aborting.");
             if (repo.Stashes.Count() != count && results.Success)
             {
                 Logger.WriteLine("Failed.");
@@ -201,6 +204,8 @@ namespace GitWrapper
             Stash stash = repo.Stashes.Add(Stasher, options.Message, sm);
 
             GitStashResults results = new GitStashResults(stash);
+            if (results.Success == false)
+                Logger.WriteLine("Failed");
             if (repo.Stashes.Count() <= count && results.Success)
             {
                 Logger.WriteLine("Failed.");
