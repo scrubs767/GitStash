@@ -85,6 +85,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="AfterDeleteStashEventArgs.cs" />
     <Compile Include="PageViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
