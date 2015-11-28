@@ -24,8 +24,8 @@ namespace GitStash.ViewModels
 
         private void GitService_PropertyChanged(object sender, StashesChangedEventArgs e)
         {
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CanCreateStash"));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("CanClickCreateButton"));
+                OnPropertyChanged("CanCreateStash");
+                OnPropertyChanged("CanClickCreateButton");
         }
         
         public string NewStashMessage { get; set; }
