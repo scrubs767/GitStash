@@ -37,6 +37,15 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Deploy|AnyCPU'">
+    <OutputPath>bin\Deploy\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="envdte, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <EmbedInteropTypes>True</EmbedInteropTypes>
@@ -92,6 +101,10 @@
     <Compile Include="TestStashesViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\GitStash.Common\GitStash.Common.csproj">
       <Project>{956e2932-c013-49c2-8aac-40a4b674ce75}</Project>
       <Name>GitStash.Common</Name>
@@ -104,14 +117,6 @@
       <Project>{3835615a-a669-455a-8bdc-3f23f390443e}</Project>
       <Name>GitWrapper</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TeamExplorer.Common\TeamExplorer.Common.csproj">
-      <Project>{388ac013-c628-4a32-abbc-a28a68c3a112}</Project>
-      <Name>TeamExplorer.Common</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <None Include="packages.config" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

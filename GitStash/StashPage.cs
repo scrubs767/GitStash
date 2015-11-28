@@ -12,6 +12,7 @@ using System.Windows.Threading;
 using GitStash.Common;
 using GitWrapper;
 using Microsoft.VisualStudio.TeamFoundation.Git.Extensibility;
+using GitStash.ViewModels;
 
 namespace GitStash
 {
