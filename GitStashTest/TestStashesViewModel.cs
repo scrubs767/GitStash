@@ -16,27 +16,6 @@ namespace GitStashTest
     public class TestStashesViewModel
     {
         [TestMethod]
-        public void GitWrapperChangedEventFiresPropertyChangedEvent()
-        {
-            var wrapper = new Mock<IGitStashWrapper>();
-            IList<IGitStash> gitStashes = new List<IGitStash>();
-            var gitStash = new Mock<IGitStash>();
-            gitStash.Setup(s => s.Index).Returns(0);
-            gitStash.Setup(s => s.Message).Returns("test");
-            gitStashes.Add(gitStash.Object);
-            wrapper.Setup(w => w.Stashes).Returns(gitStashes);
-
-            StashesViewModel vm = new StashesViewModel(wrapper.Object);
-            AutoResetEvent waitHandle = new AutoResetEvent(false);
-            bool eventWasDispatched = false;
-
-            vm.PropertyChanged += (sender, args) => { waitHandle.Set(); eventWasDispatched = true; };
-            wrapper.Raise(e => e.PropertyChanged += null, new PropertyChangedEventArgs(""));
-            waitHandle.WaitOne(5000);
-            Assert.IsTrue(eventWasDispatched);
-        }
-
-        [TestMethod]
         public void GitWrapperStashesChangedEventFiresPropertyChangedEvent()
         {
             var wrapper = new Mock<IGitStashWrapper>();

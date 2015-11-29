@@ -1,131 +1,88 @@
 ﻿using LibGit2Sharp;
-using Microsoft.VisualStudio.TeamFoundation.Git.Extensibility;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel;
-using System.ComponentModel.Composition;
-using EnvDTE80;
 using EnvDTE;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
+using GitStash.Common;
 
 namespace GitWrapper
 {
-    public class GitStashWrapper : INotifyPropertyChanged, IGitStashWrapper
+    public class GitStashWrapper : IGitStashWrapper
     {
-        private IGitExt gitService;
         private Repository repo;
-        //private Lazy<DTE2> dte;
-        //private Lazy<RunningDocumentTable> rdt;
-        //private Lazy<EnvDTE.Events> events;
-        //private Lazy<EnvDTE.DocumentEvents> documentEvents;
-        private DocumentEvents documentEvents;
         private Signature stasher = null;
-        private Lazy<SolutionEvents> solutionEvents;
-        IServiceProvider serviceProvider;
+        private IGitStashProjectEvents eventsService = null;
+        private IGitStashProjects projects;
+        private object lockObject = new Object();
 
         public delegate void StashesChangedEventHandler(object sender, StashesChangedEventArgs e);
         public event StashesChangedEventHandler StashesChangedEvent;
+
+        public GitStashWrapper(string path, IGitStashProjectEvents eventsService, IGitStashOutputLogger logger, IGitStashProjects projects)
+            : this(eventsService,logger,projects)
+        {
+            repo = new Repository(path);
+        }
+
+        public GitStashWrapper(IGitStashProjectEvents eventsService, IGitStashOutputLogger logger, IGitStashProjects projects)
+        {
+            this.Logger = logger;
+            this.eventsService = eventsService;
+            this.projects = projects;
+            eventsService.ProjectDirectoryChanged += EventsService_ProjectDirectoryChanged;
+            eventsService.StashesChangedEvent += EventsService_StashesChangedEvent;
+        }
+
+        private void EventsService_StashesChangedEvent(object sender, EventArgs e)
+        {
+            OnStashesChanged(new StashesChangedEventArgs());
+        }
+
+        private void EventsService_ProjectDirectoryChanged(object sender, ProjectDirectoryEventArgs e)
+        {
+            repo = new Repository(e.Path);
+            OnStashesChanged(new StashesChangedEventArgs());
+        }
 
         private void OnStashesChanged(StashesChangedEventArgs e)
         {
             StashesChangedEvent?.Invoke(this, e);
         }
-        private void DocumentEvents_DocumentSaved(Document Document)
-        {
-            OnStashesChanged(new StashesChangedEventArgs());
-        }
 
-        //sigh, for testing only
-        public GitStashWrapper(string dir, IOutputLogger logger)
-        {
-            this.Logger = logger;
-            try
-            {
-                repo = new Repository(dir);
-            }
-            catch (Exception ex)
-            {
-                throw new GitStashException(ex);
-            }
-        }
-
-        //I need to figure out how to mock all this DTE stuff for testing
-        public GitStashWrapper(IServiceProvider serviceProvider, IOutputLogger logger)
-        {
-            //dte = new Lazy<DTE2>(() => ServiceProvider.GlobalProvider.GetService(typeof(EnvDTE.DTE)) as DTE2);
-            //dte = new Lazy<DTE2>(() => serviceProvider.GetService(typeof(EnvDTE.DTE)) as DTE2);
-            //events = new Lazy<EnvDTE.Events>(() => dte.Value.Events);
-            //documentEvents = new Lazy<EnvDTE.DocumentEvents>(() => events.Value.DocumentEvents);
-            //documentEvents.Value.DocumentSaved += DocumentEvents_DocumentSaved;
-            this.serviceProvider = serviceProvider;
-            var dte = (DTE)serviceProvider.GetService(typeof(EnvDTE.DTE));
-            documentEvents = dte.Events.DocumentEvents;
-            documentEvents.DocumentSaved += DocumentEvents_DocumentSaved;
-
-            this.Logger = logger;
-
-            this.gitService = (IGitExt)serviceProvider.GetService(typeof(IGitExt));
-            if (gitService == null || gitService.ActiveRepositories.Count() == 0) // ifthis is null we should ever be called
-                throw new ArgumentException("Parameter not initialized", "gitService");
-            this.gitService.PropertyChanged += OnGitServicePropertyChanged;
-            //test repo exists
-            try
-            {
-                repo = new Repository(gitService.ActiveRepositories.FirstOrDefault().RepositoryPath);
-            }
-            catch (Exception ex)
-            {
-                throw new GitStashException(ex);
-            }
-        }
-
-        private bool IsDirtyProjects()
-        {
-            var dte = (DTE)serviceProvider.GetService(typeof(EnvDTE.DTE));
-            foreach(Project proj in dte.Solution.Projects)
-            {
-                if (!proj.Saved)
-                    return true;
-            }
-            return false;
-        }
-        private void OnGitServicePropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (gitService == null || gitService.ActiveRepositories.Count() == 0) // ifthis is null we should ever be called
-                return;
-            repo = new Repository(gitService.ActiveRepositories.FirstOrDefault().RepositoryPath); // probably memory leak her
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs("Stashes"));
-            }
-        }
+        private IGitStashOutputLogger Logger { get; set; }
 
         public IList<IGitStash> Stashes
         {
             get
             {
-                List<IGitStash> stashes = new List<IGitStash>();
-
-                foreach (Stash stash in repo.Stashes)
+                lock(lockObject)
                 {
-                    GitStashItem s = new GitStashItem(stash);
-                    stashes.Add(s);
+                    List<IGitStash> stashes = new List<IGitStash>();
+                    if (repo == null) return stashes;
+                    foreach (Stash stash in repo.Stashes)
+                    {
+                        GitStashItem s = new GitStashItem(stash);
+                        stashes.Add(s);
+                    }
+                    return stashes;
                 }
-                return stashes;
             }
         }
 
         public bool WorkingDirHasChanges()
         {
-
-            return repo.RetrieveStatus().IsDirty;
+            lock (lockObject)
+            {
+                if (repo == null) return false;
+                return repo.RetrieveStatus().IsDirty;
+            }
         }
 
-        private void CheckForValidStashIndex(int index, Repository repo)
+        private void CheckForValidStashIndex(int index)
         {
+            if (repo == null) throw new GitStashInvalidIndexException(String.Format("{0} is an invalid stash index.", index));
             int count = repo.Stashes.Count();
             if (count == 0 || index > (count - 1) || index < 0)
             {
@@ -137,6 +94,7 @@ namespace GitWrapper
         {
             if (stash == null)
                 throw new ArgumentException("stash parameter can not be null");
+            if (repo == null) throw new InvalidOperationException("Repository not initialized");
             Tree commitTree = stash.WorkTree.Tree;
             IList<string> paths = commitTree.Select(t => t.Path).ToList();
             DiffTargets dt = DiffTargets.WorkingDirectory;
@@ -150,120 +108,130 @@ namespace GitWrapper
 
         public IGitStashResults PopStash(IGitStashPopOptions options, int index)
         {
-            Logger.WriteLine("Apllying stash: " + index);
-            int count = repo.Stashes.Count();
-            CheckForValidStashIndex(index, repo);
-            if (UntrackedFileChanges(index, repo))
+            lock (lockObject)
             {
-                Logger.WriteLine("There are changes in your working directory, aborting.");
-                return new GitStashResultsFailure();
+                Logger.WriteLine("Apllying stash: " + index);
+                if (repo == null) throw new InvalidOperationException("Repository not initialized");
+                int count = repo.Stashes.Count();
+                CheckForValidStashIndex(index);
+                if (UntrackedFileChanges(index))
+                {
+                    Logger.WriteLine("There are changes in your working directory, aborting.");
+                    return new GitStashResultsFailure();
+                }
+                StashApplyOptions sao = new StashApplyOptions();
+                sao.ApplyModifiers = (options.Index ? StashApplyModifiers.ReinstateIndex : 0);
+                StashApplyStatus status = repo.Stashes.Pop(index, sao);
+                GitStashResults results = new GitStashResults(status);
+                if (results.Success == false)
+                    Logger.WriteLine("There are changes in your working directory, aborting.");
+                if (repo.Stashes.Count() >= count && results.Success)
+                {
+                    throw new GitStashException("Command apply and delete was called, reported success, but stash count changed.");
+                }
+                Logger.WriteLine("Done." + Environment.NewLine);
+                return results;
             }
-            StashApplyOptions sao = new StashApplyOptions();
-            sao.ApplyModifiers = (options.Index ? StashApplyModifiers.ReinstateIndex : 0);
-            StashApplyStatus status = repo.Stashes.Pop(index, sao);
-            GitStashResults results = new GitStashResults(status);
-            if (results.Success == false)
-                Logger.WriteLine("There are changes in your working directory, aborting.");
-            if (repo.Stashes.Count() >= count && results.Success)
-            {                
-                throw new GitStashException("Command apply and delete was called, reported success, but stash count changed.");
-            }
-            Logger.WriteLine("Done." + Environment.NewLine);
-            return results;
-
         }
 
         public IGitStashResults ApplyStash(IGitStashApplyOptions options, int index)
         {
-            int count = repo.Stashes.Count();
-            Logger.WriteLine("Apllying stash: " + index);
-            CheckForValidStashIndex(index, repo);
-            if (UntrackedFileChanges(index, repo))
+            lock (lockObject)
             {
-                Logger.WriteLine("There are changes in your working directory, aborting.");
-                return new GitStashResultsFailure();
+                if (repo == null) throw new InvalidOperationException("Repository not initialized");
+                int count = repo.Stashes.Count();
+                Logger.WriteLine("Apllying stash: " + index);
+                CheckForValidStashIndex(index);
+                if (UntrackedFileChanges(index))
+                {
+                    Logger.WriteLine("There are changes in your working directory, aborting.");
+                    return new GitStashResultsFailure();
+                }
+                StashApplyOptions sao = new StashApplyOptions();
+                sao.ApplyModifiers = (options.Index ? StashApplyModifiers.ReinstateIndex : 0);
+                StashApplyStatus status = repo.Stashes.Apply(index, sao);
+                GitStashResults results = new GitStashResults(status);
+                if (results.Success == false)
+                    Logger.WriteLine("There are changes in your working directory, aborting.");
+                if (repo.Stashes.Count() != count && results.Success)
+                {
+                    Logger.WriteLine("Failed.");
+                    throw new GitStashException("Command apply was called and reported success, but stash count changed.");
+                }
+                Logger.WriteLine("Done." + Environment.NewLine);
+                return results;
             }
-            StashApplyOptions sao = new StashApplyOptions();
-            sao.ApplyModifiers = (options.Index ? StashApplyModifiers.ReinstateIndex : 0);
-            StashApplyStatus status = repo.Stashes.Apply(index, sao);
-            GitStashResults results = new GitStashResults(status);
-            if (results.Success == false)
-                Logger.WriteLine("There are changes in your working directory, aborting.");
-            if (repo.Stashes.Count() != count && results.Success)
-            {
-                Logger.WriteLine("Failed.");
-                throw new GitStashException("Command apply was called and reported success, but stash count changed.");
-            }
-            Logger.WriteLine("Done." + Environment.NewLine);
-            return results;
-
         }
 
         public IGitStashResults SaveStash(IGitStashSaveOptions options)
         {
-            if (IsDirtyProjects())
+            lock (lockObject)
             {
-                Logger.WriteLine("Your project has not been saved, aborting");
-                return new GitStashResultsFailure();
-            }
-            Logger.WriteLine("Saving stash: " + options.Message);
-            bool hasChanges = WorkingDirHasChanges();
-            int count = repo.Stashes.Count();
-            if (!repo.RetrieveStatus().IsDirty)
-            {
-                Logger.WriteLine("Nothing to save.");
-                return new GitStashResults(null);
-            }
-            StashModifiers sm = (options.KeepIndex ? StashModifiers.KeepIndex : 0);
-            sm |= (options.Untracked ? StashModifiers.IncludeUntracked : 0);
-            sm |= (options.Ignored ? StashModifiers.IncludeIgnored : 0);
-            Stash stash = repo.Stashes.Add(Stasher, options.Message, sm);
+                if (repo == null) throw new InvalidOperationException("Repository not initialized");
+                if (projects.IsDirty)
+                {
+                    Logger.WriteLine("Your project has not been saved, aborting");
+                    return new GitStashResultsFailure();
+                }
+                Logger.WriteLine("Saving stash: " + options.Message);
+                bool hasChanges = WorkingDirHasChanges();
+                int count = repo.Stashes.Count();
+                if (!repo.RetrieveStatus().IsDirty)
+                {
+                    Logger.WriteLine("Nothing to save.");
+                    return new GitStashResults(null);
+                }
+                StashModifiers sm = (options.KeepIndex ? StashModifiers.KeepIndex : 0);
+                sm |= (options.Untracked ? StashModifiers.IncludeUntracked : 0);
+                sm |= (options.Ignored ? StashModifiers.IncludeIgnored : 0);
+                Stash stash = repo.Stashes.Add(Stasher, options.Message, sm);
 
-            GitStashResults results = new GitStashResults(stash);
-            if (results.Success == false)
-                Logger.WriteLine("Failed");
-            if (repo.Stashes.Count() <= count && results.Success)
-            {
-                Logger.WriteLine("Failed.");
-                throw new GitStashException("Command save was called and reported success, but stash didn't increase.");
-            }
-            if (results.Success == false)
-            {
-                if (stash != null)
-                    LogFilesInStash(stash);
-                if (hasChanges)
-                    Logger.WriteLine("perhaps you have untracked files, and didn't select Untracked.");
-                Logger.WriteLine("Failed.");
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Stahses"));
+                GitStashResults results = new GitStashResults(stash);
+                if (results.Success == false)
+                    Logger.WriteLine("Failed");
+                if (repo.Stashes.Count() <= count && results.Success)
+                {
+                    Logger.WriteLine("Failed.");
+                    throw new GitStashException("Command save was called and reported success, but stash didn't increase.");
+                }
+                if (results.Success == false)
+                {
+                    if (stash != null)
+                        LogFilesInStash(stash);
+                    if (hasChanges)
+                        Logger.WriteLine("perhaps you have untracked files, and didn't select Untracked.");
+                    Logger.WriteLine("Failed.");
+                    OnStashesChanged(new StashesChangedEventArgs());
+                    return results;
+                }
+                LogFilesInStash(stash);
+                Logger.WriteLine("Done." + Environment.NewLine);
+                OnStashesChanged(new StashesChangedEventArgs());
                 return results;
             }
-            LogFilesInStash(stash);
-            Logger.WriteLine("Done." + Environment.NewLine);
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Stahses"));
-            return results;
-
         }
 
         public IGitStashResults DropStash(IGitStashDropOptions options, int index)
         {
-            Logger.WriteLine("Deleting stash: " + index);
-            CheckForValidStashIndex(index, repo);
-            int count = repo.Stashes.Count();
-            repo.Stashes.Remove(index);
-            if (repo.Stashes.Count() < count)
+            lock (lockObject)
             {
-                Logger.WriteLine("Done." + Environment.NewLine);
-                return new GitStashResultsSuccess();
+                if (repo == null) throw new InvalidOperationException("Repository not initialized");
+                Logger.WriteLine("Deleting stash: " + index);
+                CheckForValidStashIndex(index);
+                int count = repo.Stashes.Count();
+                repo.Stashes.Remove(index);
+                if (repo.Stashes.Count() < count)
+                {
+                    Logger.WriteLine("Done." + Environment.NewLine);
+                    return new GitStashResultsSuccess();
+                }
+                else
+                {
+                    Logger.WriteLine("Failed.");
+                    return new GitStashResultsFailure();
+                }
             }
-            else
-            {
-                Logger.WriteLine("Failed.");
-                return new GitStashResultsFailure();
-            }
-
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         private Signature Stasher
         {
@@ -281,16 +249,18 @@ namespace GitWrapper
         {
             get
             {
-                if (repo != null && repo.Head != null)
-                    return repo.Head.FriendlyName;
-                return "";
+                lock (lockObject)
+                {
+                    if (repo != null && repo.Head != null)
+                        return repo.Head.FriendlyName;
+                    return "";
+                }
             }
-        }
+        }        
 
-        public IOutputLogger Logger { get; private set; }
-
-        private bool UntrackedFileChanges(int index, Repository repo)
+        private bool UntrackedFileChanges(int index)
         {
+            if (repo == null) throw new InvalidOperationException("Repository not initialized");
             Stash stash = repo.Stashes.ElementAt(index);
             if (stash.Untracked == null)
                 return false;
@@ -306,16 +276,20 @@ namespace GitWrapper
 
         public IList<string> GetUntrackedChangesList(int stashIndex)
         {
-            Stash stash = repo.Stashes.ElementAt(stashIndex);
-            IList<string> paths = new List<string>();
-            IList<string> p = stash.Untracked.Tree.Select(t => t.Path).ToList();
-            if (p.Count() == 0)
-                return paths;
-            DiffTargets dt = DiffTargets.WorkingDirectory;
-            var r = repo.Diff.Compare<TreeChanges>(stash.Untracked.Tree, dt, p);
-            if (!r.Any())
-                return paths;
-            return r.Modified.Select(c => c.Path).ToList();
+            lock (lockObject)
+            {
+                if (repo == null) throw new InvalidOperationException("Repository not initialized");
+                Stash stash = repo.Stashes.ElementAt(stashIndex);
+                IList<string> paths = new List<string>();
+                IList<string> p = stash.Untracked.Tree.Select(t => t.Path).ToList();
+                if (p.Count() == 0)
+                    return paths;
+                DiffTargets dt = DiffTargets.WorkingDirectory;
+                var r = repo.Diff.Compare<TreeChanges>(stash.Untracked.Tree, dt, p);
+                if (!r.Any())
+                    return paths;
+                return r.Modified.Select(c => c.Path).ToList();
+            }
         }
 
         private static string GetUserEmailAddressVS14()

@@ -94,6 +94,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="FilewatcherTests.cs" />
     <Compile Include="GitWrapperTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReccomendedActionsViewModelsTests.cs" />
@@ -112,6 +113,10 @@
     <ProjectReference Include="..\GitStash.ViewModels\GitStash.ViewModels.csproj">
       <Project>{a80d441b-daa0-431d-affa-c4b900b9ef64}</Project>
       <Name>GitStash.ViewModels</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GitStash\GitStash.csproj">
+      <Project>{6c22f70f-ed3a-45f8-9d30-23f48e13e75a}</Project>
+      <Name>GitStash</Name>
     </ProjectReference>
     <ProjectReference Include="..\GitWrapper\GitWrapper.csproj">
       <Project>{3835615a-a669-455a-8bdc-3f23f390443e}</Project>

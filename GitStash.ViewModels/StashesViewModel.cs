@@ -14,18 +14,9 @@ namespace GitStash.ViewModels
             this.git = git;
             // I think one of these are redundant
             git.StashesChangedEvent += Git_StashesChangedEvent;
-            git.PropertyChanged += Git_PropertyChanged;
         }
 
         private void Git_StashesChangedEvent(object sender, StashesChangedEventArgs e)
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs("Stashes"));
-            }
-        }
-
-        private void Git_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (PropertyChanged != null)
             {

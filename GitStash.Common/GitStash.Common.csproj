@@ -52,7 +52,10 @@
     <Compile Include="..\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="IGitStashProjectEvents.cs" />
+    <Compile Include="IGitStashProjects.cs" />
     <Compile Include="INavigateable.cs" />
+    <Compile Include="ProjectDirectoryEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
