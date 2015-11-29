@@ -1,13 +1,9 @@
 ﻿using GitWrapper;
-using Microsoft.TeamFoundation.Controls.WPF.TeamExplorer;
+using Microsoft.TeamFoundation.Controls;
 using Microsoft.TeamFoundation.MVVM;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
+using TeamExplorer.Common;
 
 namespace GitStash.ViewModels
 {
@@ -21,10 +17,13 @@ namespace GitStash.ViewModels
             get; set;
         }
         private IGitStashWrapper wrapper;
+        private ITeamExplorerBase page;
+
         public event PropertyChangedEventHandler PropertyChanged;
         
-        public StashViewModel(IGitStashWrapper wrapper, IGitStash stash)
+        public StashViewModel(IGitStashWrapper wrapper, IGitStash stash, ITeamExplorerBase page)
         {
+            this.page = page;
             this.Stash = stash;
             this.wrapper = wrapper;
             PopDropDownCommand = new RelayCommand(p => OnClickPopStash(), p => AlwaysTrueCanDropDown);
@@ -40,16 +39,22 @@ namespace GitStash.ViewModels
         }
         private void OnClickPopStash()
         {
-            wrapper.PopStash(new GitStashOptions(), Stash.Index);
+            IGitStashResults results = wrapper.PopStash(new GitStashOptions(), Stash.Index);
+            if (!string.IsNullOrEmpty(results.Message))
+                page.ShowNotification(results.Message, NotificationType.Information);
             OnAfterDeleted();
         }
         private void OnClickApplyStash()
         {
-            wrapper.ApplyStash(new GitStashOptions(), Stash.Index);
+            IGitStashResults results = wrapper.ApplyStash(new GitStashOptions(), Stash.Index);
+            if (!string.IsNullOrEmpty(results.Message))
+                page.ShowNotification(results.Message, NotificationType.Information);
         }
         private void OnClickDropStash()
         {
-            wrapper.DropStash(new GitStashOptions(), Stash.Index);
+            IGitStashResults results = wrapper.DropStash(new GitStashOptions(), Stash.Index);
+            if (!string.IsNullOrEmpty(results.Message))
+                page.ShowNotification(results.Message, NotificationType.Information);
             OnAfterDeleted();
         }
         public RelayCommand PopDropDownCommand { get; set; }

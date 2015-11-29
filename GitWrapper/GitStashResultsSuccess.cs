@@ -2,25 +2,21 @@
 
 namespace GitWrapper
 {
-    internal class GitStashResultsSuccess : IGitStashResults
+    internal class GitStashResultsSuccess : GitStashResults, IGitStashResults
     {
-        public bool Success
+        public GitStashResultsSuccess(string msg)
+        :    base(true, msg)
         {
-            get
-            {
-                return true; ;
-            }
+
         }
     }
 
-    internal class GitStashResultsFailure : IGitStashResults
+    internal class GitStashResultsFailure : GitStashResults, IGitStashResults
     {
-        public bool Success
+        public GitStashResultsFailure(string msg)
+        :    base(false, msg)
         {
-            get
-            {
-                return false; ;
-            }
+
         }
     }
 }

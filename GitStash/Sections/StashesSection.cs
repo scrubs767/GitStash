@@ -24,7 +24,7 @@ namespace GitStash.Sections
         {
             base.Initialize(sender, e);
             this.wrapper = GetService<IGitStashWrapper>();
-            vm = new StashesViewModel(wrapper);
+            vm = new StashesViewModel(wrapper, this);
             vm.PropertyChanged += StashesPropertyChanged;
             Title = String.Format("Stashes({0})", vm.Stashes.Count());
             IsVisible = true;

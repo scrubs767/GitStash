@@ -15,7 +15,7 @@ namespace GitStash.Sections
         {
             base.Initialize(sender, e);
             this.wrapper = GetService<IGitStashWrapper>();            
-            SectionContent = new RecommendedActionsControl(new RecommendedActionsViewModel(wrapper));
+            SectionContent = new RecommendedActionsControl(new RecommendedActionsViewModel(wrapper,this));
             Title = "Create Stash";
             IsVisible = true;
         }

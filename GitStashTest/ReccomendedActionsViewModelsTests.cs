@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using TeamExplorer.Common;
 
 namespace GitStashTest
 {
@@ -19,8 +20,8 @@ namespace GitStashTest
         private void TestVmFiresEvent(Action<IGitStashWrapper> eventExpression, EventArgs args, string PropertyName)
         {
             var wrapper = new Mock<IGitStashWrapper>();
-
-            RecommendedActionsViewModel vm = new RecommendedActionsViewModel(wrapper.Object);
+            var page = new Mock<ITeamExplorerBase>();
+            RecommendedActionsViewModel vm = new RecommendedActionsViewModel(wrapper.Object, page.Object);
             AutoResetEvent waitHandle = new AutoResetEvent(false);
             bool eventWasDispatched = false;
             vm.PropertyChanged += (s, a) =>
@@ -48,6 +49,7 @@ namespace GitStashTest
         [TestMethod]
         public void StashAllSetsProperties()
         {
+            var page = new Mock<ITeamExplorerBase>();
             var wrapper = new Mock<IGitStashWrapper>();
             IList<IGitStash> gitStashes = new List<IGitStash>();
             var gitStash = new Mock<IGitStash>();
@@ -56,7 +58,7 @@ namespace GitStashTest
             gitStashes.Add(gitStash.Object);
             wrapper.Setup(w => w.Stashes).Returns(gitStashes);
 
-            RecommendedActionsViewModel vm = new RecommendedActionsViewModel(wrapper.Object);
+            RecommendedActionsViewModel vm = new RecommendedActionsViewModel(wrapper.Object, page.Object);
             vm.StashAll = true;
             Assert.IsFalse(vm.StashKeepIndex);
             Assert.IsFalse(vm.StashUntracked);
@@ -65,8 +67,9 @@ namespace GitStashTest
         [TestMethod]
         public void StashAllFiresStashUntrackedEvent()
         {
+            var page = new Mock<ITeamExplorerBase>();
             var wrapper = new Mock<IGitStashWrapper>();
-            RecommendedActionsViewModel vm = new RecommendedActionsViewModel(wrapper.Object);
+            RecommendedActionsViewModel vm = new RecommendedActionsViewModel(wrapper.Object, page.Object);
 
             AutoResetEvent waitHandle = new AutoResetEvent(false);
             bool clickeventWasDispatched = false;
@@ -82,8 +85,9 @@ namespace GitStashTest
         [TestMethod]
         public void StashAllFiresStashIgnoredEvent()
         {
+            var page = new Mock<ITeamExplorerBase>();
             var wrapper = new Mock<IGitStashWrapper>();
-            RecommendedActionsViewModel vm = new RecommendedActionsViewModel(wrapper.Object);
+            RecommendedActionsViewModel vm = new RecommendedActionsViewModel(wrapper.Object, page.Object);
 
             AutoResetEvent waitHandle = new AutoResetEvent(false);
             bool clickeventWasDispatched = false;
@@ -100,6 +104,7 @@ namespace GitStashTest
         [TestMethod]
         public void StashUntrackedSetsProperties()
         {
+            var page = new Mock<ITeamExplorerBase>();
             var wrapper = new Mock<IGitStashWrapper>();
             IList<IGitStash> gitStashes = new List<IGitStash>();
             var gitStash = new Mock<IGitStash>();
@@ -108,7 +113,7 @@ namespace GitStashTest
             gitStashes.Add(gitStash.Object);
             wrapper.Setup(w => w.Stashes).Returns(gitStashes);
 
-            RecommendedActionsViewModel vm = new RecommendedActionsViewModel(wrapper.Object);
+            RecommendedActionsViewModel vm = new RecommendedActionsViewModel(wrapper.Object, page.Object);
             vm.StashKeepIndex = true;
             Assert.IsFalse(vm.StashAll);
             Assert.IsFalse(vm.StashUntracked);
@@ -116,8 +121,9 @@ namespace GitStashTest
         [TestMethod]
         public void StashUntrackedFiresStashIgnoredEvents()
         {
+            var page = new Mock<ITeamExplorerBase>();
             var wrapper = new Mock<IGitStashWrapper>();
-            RecommendedActionsViewModel vm = new RecommendedActionsViewModel(wrapper.Object);
+            RecommendedActionsViewModel vm = new RecommendedActionsViewModel(wrapper.Object, page.Object);
 
             AutoResetEvent waitHandle = new AutoResetEvent(false);
             bool clickeventWasDispatched = false;
@@ -133,8 +139,9 @@ namespace GitStashTest
         [TestMethod]
         public void StashUntrackedFiresStashAllEvents()
         {
+            var page = new Mock<ITeamExplorerBase>();
             var wrapper = new Mock<IGitStashWrapper>();
-            RecommendedActionsViewModel vm = new RecommendedActionsViewModel(wrapper.Object);
+            RecommendedActionsViewModel vm = new RecommendedActionsViewModel(wrapper.Object, page.Object);
 
             AutoResetEvent waitHandle = new AutoResetEvent(false);
             bool clickeventWasDispatched = false;
@@ -151,6 +158,7 @@ namespace GitStashTest
         [TestMethod]
         public void StashIgnoredSetsProperties()
         {
+            var page = new Mock<ITeamExplorerBase>();
             var wrapper = new Mock<IGitStashWrapper>();
             IList<IGitStash> gitStashes = new List<IGitStash>();
             var gitStash = new Mock<IGitStash>();
@@ -159,7 +167,7 @@ namespace GitStashTest
             gitStashes.Add(gitStash.Object);
             wrapper.Setup(w => w.Stashes).Returns(gitStashes);
 
-            RecommendedActionsViewModel vm = new RecommendedActionsViewModel(wrapper.Object);
+            RecommendedActionsViewModel vm = new RecommendedActionsViewModel(wrapper.Object, page.Object);
             vm.StashUntracked = true;
             Assert.IsFalse(vm.StashKeepIndex);
             Assert.IsFalse(vm.StashAll);
@@ -168,8 +176,9 @@ namespace GitStashTest
         [TestMethod]
         public void StashIgnoredFiresStashAllEvents()
         {
+            var page = new Mock<ITeamExplorerBase>();
             var wrapper = new Mock<IGitStashWrapper>();
-            RecommendedActionsViewModel vm = new RecommendedActionsViewModel(wrapper.Object);
+            RecommendedActionsViewModel vm = new RecommendedActionsViewModel(wrapper.Object, page.Object);
 
             AutoResetEvent waitHandle = new AutoResetEvent(false);
             bool clickeventWasDispatched = false;
@@ -185,8 +194,9 @@ namespace GitStashTest
         [TestMethod]
         public void StashIgnoredFiresStashUntrackedEvents()
         {
+            var page = new Mock<ITeamExplorerBase>();
             var wrapper = new Mock<IGitStashWrapper>();
-            RecommendedActionsViewModel vm = new RecommendedActionsViewModel(wrapper.Object);
+            RecommendedActionsViewModel vm = new RecommendedActionsViewModel(wrapper.Object, page.Object);
 
             AutoResetEvent waitHandle = new AutoResetEvent(false);
             bool clickeventWasDispatched = false;
@@ -203,6 +213,7 @@ namespace GitStashTest
         [TestMethod]
         public void OnClickCreateStashButtonCallsSave()
         {
+            var page = new Mock<ITeamExplorerBase>();
             var wrapper = new Mock<IGitStashWrapper>();
             var results = new Mock<IGitStashResults>();
             results.Setup(r => r.Success).Returns(true);
@@ -211,7 +222,7 @@ namespace GitStashTest
                 .Returns(results.Object)
                 .Callback(() => waitHandle.Set())
                 .Verifiable();
-            RecommendedActionsViewModel vm = new RecommendedActionsViewModel(wrapper.Object);
+            RecommendedActionsViewModel vm = new RecommendedActionsViewModel(wrapper.Object, page.Object);
             vm.CreateStashButtonCommand.Execute(null);
             waitHandle.WaitOne(5000);
 
@@ -221,13 +232,14 @@ namespace GitStashTest
         [TestMethod]
         public void OnClickCreateStashButtonFiresStashesEvents()
         {
+            var page = new Mock<ITeamExplorerBase>();
             var wrapper = new Mock<IGitStashWrapper>();
             var results = new Mock<IGitStashResults>();
             results.Setup(r => r.Success).Returns(true);
             wrapper.Setup(w => w.SaveStash(It.IsAny<IGitStashSaveOptions>()))
                 .Returns(results.Object)
                 .Verifiable();
-            RecommendedActionsViewModel vm = new RecommendedActionsViewModel(wrapper.Object);
+            RecommendedActionsViewModel vm = new RecommendedActionsViewModel(wrapper.Object, page.Object);
             ICommand command = vm.CreateStashButtonCommand;
 
             AutoResetEvent waitHandle = new AutoResetEvent(false);
@@ -244,13 +256,14 @@ namespace GitStashTest
         [TestMethod]
         public void OnClickCreateStashButtonFiresNewStashMessageEvents()
         {
+            var page = new Mock<ITeamExplorerBase>();
             var wrapper = new Mock<IGitStashWrapper>();
             var results = new Mock<IGitStashResults>();
             results.Setup(r => r.Success).Returns(true);
             wrapper.Setup(w => w.SaveStash(It.IsAny<IGitStashSaveOptions>()))
                 .Returns(results.Object)
                 .Verifiable();
-            RecommendedActionsViewModel vm = new RecommendedActionsViewModel(wrapper.Object);
+            RecommendedActionsViewModel vm = new RecommendedActionsViewModel(wrapper.Object, page.Object);
             ICommand command = vm.CreateStashButtonCommand;
 
             AutoResetEvent waitHandle = new AutoResetEvent(false);
@@ -267,13 +280,14 @@ namespace GitStashTest
         [TestMethod]
         public void OnClickCreateStashButtonFiresCreateStashButtonCommandEvents()
         {
+            var page = new Mock<ITeamExplorerBase>();
             var wrapper = new Mock<IGitStashWrapper>();
             var results = new Mock<IGitStashResults>();
             results.Setup(r => r.Success).Returns(true);
             wrapper.Setup(w => w.SaveStash(It.IsAny<IGitStashSaveOptions>()))
                 .Returns(results.Object)
                 .Verifiable();
-            RecommendedActionsViewModel vm = new RecommendedActionsViewModel(wrapper.Object);
+            RecommendedActionsViewModel vm = new RecommendedActionsViewModel(wrapper.Object, page.Object);
             ICommand command = vm.CreateStashButtonCommand;
 
             AutoResetEvent waitHandle = new AutoResetEvent(false);

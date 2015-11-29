@@ -20,7 +20,7 @@ namespace GitWrapper
         public delegate void StashesChangedEventHandler(object sender, StashesChangedEventArgs e);
         public event StashesChangedEventHandler StashesChangedEvent;
 
-        public GitStashWrapper(string path, IGitStashProjectEvents eventsService, IGitStashOutputLogger logger, IGitStashProjects projects)
+        public GitStashWrapper(string path, IGitStashProjectEvents eventsService, IGitStashOutputLogger logger,IGitStashProjects projects)
             : this(eventsService,logger,projects)
         {
             repo = new Repository(path);
@@ -111,20 +111,24 @@ namespace GitWrapper
             lock (lockObject)
             {
                 Logger.WriteLine("Apllying stash: " + index);
-                if (repo == null) throw new InvalidOperationException("Repository not initialized");
+                if (repo == null) return new GitStashResultsFailure("Repository not initialized");
+
                 int count = repo.Stashes.Count();
                 CheckForValidStashIndex(index);
                 if (UntrackedFileChanges(index))
                 {
                     Logger.WriteLine("There are changes in your working directory, aborting.");
-                    return new GitStashResultsFailure();
+                    return new GitStashResultsFailure("There are changes in your working directory, aborting.");
                 }
                 StashApplyOptions sao = new StashApplyOptions();
                 sao.ApplyModifiers = (options.Index ? StashApplyModifiers.ReinstateIndex : 0);
                 StashApplyStatus status = repo.Stashes.Pop(index, sao);
-                GitStashResults results = new GitStashResults(status);
+                GitStashResults results = new GitStashResults(status, "Succesfully applied stash.");
                 if (results.Success == false)
+                {
+                    results.Message = "There are changes in your working directory.";
                     Logger.WriteLine("There are changes in your working directory, aborting.");
+                }
                 if (repo.Stashes.Count() >= count && results.Success)
                 {
                     throw new GitStashException("Command apply and delete was called, reported success, but stash count changed.");
@@ -138,21 +142,24 @@ namespace GitWrapper
         {
             lock (lockObject)
             {
-                if (repo == null) throw new InvalidOperationException("Repository not initialized");
+                if (repo == null) return new GitStashResultsFailure("Repository not initialized");
                 int count = repo.Stashes.Count();
                 Logger.WriteLine("Apllying stash: " + index);
                 CheckForValidStashIndex(index);
                 if (UntrackedFileChanges(index))
                 {
                     Logger.WriteLine("There are changes in your working directory, aborting.");
-                    return new GitStashResultsFailure();
+                    return new GitStashResultsFailure("There are changes in your working directory, aborting.");
                 }
                 StashApplyOptions sao = new StashApplyOptions();
                 sao.ApplyModifiers = (options.Index ? StashApplyModifiers.ReinstateIndex : 0);
                 StashApplyStatus status = repo.Stashes.Apply(index, sao);
-                GitStashResults results = new GitStashResults(status);
+                GitStashResults results = new GitStashResults(status, "Succesfully applied stash.");
                 if (results.Success == false)
+                {
+                    results.Message = "There are changes in your working directory.";
                     Logger.WriteLine("There are changes in your working directory, aborting.");
+                }
                 if (repo.Stashes.Count() != count && results.Success)
                 {
                     Logger.WriteLine("Failed.");
@@ -167,11 +174,11 @@ namespace GitWrapper
         {
             lock (lockObject)
             {
-                if (repo == null) throw new InvalidOperationException("Repository not initialized");
+                if (repo == null) return new GitStashResultsFailure("Repository not initialized");
                 if (projects.IsDirty)
                 {
                     Logger.WriteLine("Your project has not been saved, aborting");
-                    return new GitStashResultsFailure();
+                    return new GitStashResultsFailure("Your project has not been saved");
                 }
                 Logger.WriteLine("Saving stash: " + options.Message);
                 bool hasChanges = WorkingDirHasChanges();
@@ -179,16 +186,19 @@ namespace GitWrapper
                 if (!repo.RetrieveStatus().IsDirty)
                 {
                     Logger.WriteLine("Nothing to save.");
-                    return new GitStashResults(null);
+                    return new GitStashResultsFailure("Nothing to stash.");
                 }
                 StashModifiers sm = (options.KeepIndex ? StashModifiers.KeepIndex : 0);
                 sm |= (options.Untracked ? StashModifiers.IncludeUntracked : 0);
                 sm |= (options.Ignored ? StashModifiers.IncludeIgnored : 0);
                 Stash stash = repo.Stashes.Add(Stasher, options.Message, sm);
 
-                GitStashResults results = new GitStashResults(stash);
+                GitStashResults results = new GitStashResults(stash, "Succesfully saved stash.");
                 if (results.Success == false)
+                {
                     Logger.WriteLine("Failed");
+                    results.Message = "Failed to save stash.";
+                }
                 if (repo.Stashes.Count() <= count && results.Success)
                 {
                     Logger.WriteLine("Failed.");
@@ -199,7 +209,10 @@ namespace GitWrapper
                     if (stash != null)
                         LogFilesInStash(stash);
                     if (hasChanges)
+                    {
                         Logger.WriteLine("perhaps you have untracked files, and didn't select Untracked.");
+                        results.Message = "perhaps you have untracked files, and didn't select Untracked.";
+                    }
                     Logger.WriteLine("Failed.");
                     OnStashesChanged(new StashesChangedEventArgs());
                     return results;
@@ -215,7 +228,7 @@ namespace GitWrapper
         {
             lock (lockObject)
             {
-                if (repo == null) throw new InvalidOperationException("Repository not initialized");
+                if (repo == null) return new GitStashResultsFailure("Repository not initialized");
                 Logger.WriteLine("Deleting stash: " + index);
                 CheckForValidStashIndex(index);
                 int count = repo.Stashes.Count();
@@ -223,12 +236,12 @@ namespace GitWrapper
                 if (repo.Stashes.Count() < count)
                 {
                     Logger.WriteLine("Done." + Environment.NewLine);
-                    return new GitStashResultsSuccess();
+                    return new GitStashResultsSuccess("Deleted Stash");
                 }
                 else
                 {
                     Logger.WriteLine("Failed.");
-                    return new GitStashResultsFailure();
+                    return new GitStashResultsFailure("Failed to delete stash");
                 }
             }
         }
@@ -303,7 +316,6 @@ namespace GitWrapper
 
             const string SubKey = "Software\\Microsoft\\VSCommon\\ConnectedUser\\IdeUser\\Cache";
             const string EmailAddressKeyName = "EmailAddress";
-            const string UserNameKeyName = "DisplayName";
 
             RegistryKey root = Registry.CurrentUser;
             RegistryKey sk = root.OpenSubKey(SubKey);
@@ -332,7 +344,6 @@ namespace GitWrapper
             // Assuming permission is granted, we obtain the email address.
 
             const string SubKey = "Software\\Microsoft\\VSCommon\\ConnectedUser\\IdeUser\\Cache";
-            const string EmailAddressKeyName = "EmailAddress";
             const string UserNameKeyName = "DisplayName";
 
             RegistryKey root = Registry.CurrentUser;

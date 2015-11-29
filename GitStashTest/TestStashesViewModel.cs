@@ -2,13 +2,10 @@
 using GitWrapper;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
+using TeamExplorer.Common;
 
 namespace GitStashTest
 {
@@ -18,6 +15,7 @@ namespace GitStashTest
         [TestMethod]
         public void GitWrapperStashesChangedEventFiresPropertyChangedEvent()
         {
+            var page = new Mock<ITeamExplorerBase>();
             var wrapper = new Mock<IGitStashWrapper>();
             IList<IGitStash> gitStashes = new List<IGitStash>();
             var gitStash = new Mock<IGitStash>();
@@ -26,7 +24,7 @@ namespace GitStashTest
             gitStashes.Add(gitStash.Object);
             wrapper.Setup(w => w.Stashes).Returns(gitStashes);
 
-            StashesViewModel vm = new StashesViewModel(wrapper.Object);
+            StashesViewModel vm = new StashesViewModel(wrapper.Object, page.Object);
             AutoResetEvent waitHandle = new AutoResetEvent(false);
             bool eventWasDispatched = false;
 
@@ -39,6 +37,7 @@ namespace GitStashTest
         [TestMethod]
         public void PropertyStashesReturnsCorrectly()
         {
+            var page = new Mock<ITeamExplorerBase>();
             var wrapper = new Mock<IGitStashWrapper>();
             IList<IGitStash> gitStashes = new List<IGitStash>();
             var gitStash = new Mock<IGitStash>();
@@ -47,7 +46,7 @@ namespace GitStashTest
             gitStashes.Add(gitStash.Object);
             wrapper.Setup(w => w.Stashes).Returns(gitStashes);
 
-            StashesViewModel vm = new StashesViewModel(wrapper.Object);
+            StashesViewModel vm = new StashesViewModel(wrapper.Object, page.Object);
 
             Assert.IsTrue(vm.Stashes.Count() == 1);
             Assert.IsTrue(vm.Stashes.ElementAt(0).Stash.GetHashCode() == gitStash.Object.GetHashCode());
@@ -56,15 +55,23 @@ namespace GitStashTest
         [TestMethod]
         public void AfterDeleteEventHandlerFiresPropertyChangedEvent()
         {
+            var results = new Mock<IGitStashResults>();
+            var page = new Mock<ITeamExplorerBase>();
             var wrapper = new Mock<IGitStashWrapper>();
+            results.Setup(r => r.Success).Returns(true);
+            results.Setup(r => r.Message).Returns("test");
             IList<IGitStash> gitStashes = new List<IGitStash>();
             var gitStash = new Mock<IGitStash>();
             gitStash.Setup(s => s.Index).Returns(0);
             gitStash.Setup(s => s.Message).Returns("test");
             gitStashes.Add(gitStash.Object);
             wrapper.Setup(w => w.Stashes).Returns(gitStashes);
+            wrapper.Setup(w => w.DropStash(
+                It.IsAny<IGitStashDropOptions>(),
+                It.Is<int>(i => i == 0)))
+                .Returns(results.Object);
 
-            StashesViewModel vm = new StashesViewModel(wrapper.Object);
+            StashesViewModel vm = new StashesViewModel(wrapper.Object, page.Object);
             AutoResetEvent waitHandle = new AutoResetEvent(false);
             bool eventWasDispatched = false;
             vm.PropertyChanged += (o, e) => { waitHandle.Set(); eventWasDispatched = true; };
