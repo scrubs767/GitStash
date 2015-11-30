@@ -23,6 +23,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitStash.Common", "GitStash
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A9D7DCE0-033D-4FBC-8DFC-335D203AF2F4}"
 	ProjectSection(SolutionItems) = preProject
+		PreDeploy.ps1 = PreDeploy.ps1
 		ResetInstance.bat = ResetInstance.bat
 		SharedAssemblyInfo.cs = SharedAssemblyInfo.cs
 	EndProjectSection
