@@ -9,7 +9,7 @@ namespace TeamExplorer.Common
     /// <summary>
     /// Team Explorer plugin common base class.
     /// </summary>
-    public class TeamExplorerBase : IDisposable, INotifyPropertyChanged
+    public class TeamExplorerBase : IDisposable, INotifyPropertyChanged, ITeamExplorerBase
     {
         public TeamExplorerBase()
         {

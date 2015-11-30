@@ -1,6 +1,6 @@
 ﻿namespace GitWrapper
 {
-    public interface IOutputLogger
+    public interface IGitStashOutputLogger
     {
         void WriteLine(string text);
     }

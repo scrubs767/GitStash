@@ -2,19 +2,21 @@
 using System.Linq;
 using System.ComponentModel;
 using GitWrapper;
+using TeamExplorer.Common;
 
 namespace GitStash.ViewModels
 {
     public class StashesViewModel : INotifyPropertyChanged
     {
         IGitStashWrapper git;
+        List<StashViewModel> stashes;
+        private ITeamExplorerBase page;
 
-        public StashesViewModel(IGitStashWrapper git)
+        public StashesViewModel(IGitStashWrapper git, ITeamExplorerBase page)
         {
+            this.page = page;
             this.git = git;
-            // I think one of these are redundant
             git.StashesChangedEvent += Git_StashesChangedEvent;
-            git.PropertyChanged += Git_PropertyChanged;
         }
 
         private void Git_StashesChangedEvent(object sender, StashesChangedEventArgs e)
@@ -25,22 +27,12 @@ namespace GitStash.ViewModels
             }
         }
 
-        private void Git_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs("Stashes"));
-            }
-        }
-
-        List<StashViewModel> stashes;
-
         public IList<StashViewModel> Stashes
         {
             get
             {
                 if(stashes != null) stashes.ForEach(s => s.AfterDelete -= AfterDeleteStash);
-                stashes = git.Stashes.Select(s => new StashViewModel(git, s)).ToList();
+                stashes = git.Stashes.Select(s => new StashViewModel(git, s, page)).ToList();
                 stashes.ForEach(s => s.AfterDelete += AfterDeleteStash);
                 return stashes;
             }

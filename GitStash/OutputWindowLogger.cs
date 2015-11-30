@@ -4,7 +4,7 @@ using System;
 
 namespace GitStash
 {
-    public class OutputWindowLogger : IOutputLogger
+    public class OutputWindowLogger : IGitStashOutputLogger
     {
         private IVsOutputWindowPane output;
 

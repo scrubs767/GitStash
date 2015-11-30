@@ -116,6 +116,10 @@
       <Project>{3835615a-a669-455a-8bdc-3f23f390443e}</Project>
       <Name>GitWrapper</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TeamExplorer.Common\TeamExplorer.Common.csproj">
+      <Project>{388ac013-c628-4a32-abbc-a28a68c3a112}</Project>
+      <Name>TeamExplorer.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

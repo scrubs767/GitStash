@@ -7,9 +7,6 @@ namespace GitWrapper
     {
         IList<IGitStash> Stashes { get; }
         string CurrentBranch { get; }
-
-        event PropertyChangedEventHandler PropertyChanged;
-
         IGitStashResults ApplyStash(IGitStashApplyOptions options, int index);
         IGitStashResults DropStash(IGitStashDropOptions options, int index);
         IList<string> GetUntrackedChangesList(int stashIndex);

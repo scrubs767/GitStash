@@ -1,21 +1,24 @@
 ﻿using GitWrapper;
+using Microsoft.TeamFoundation.Controls;
 using Microsoft.TeamFoundation.MVVM;
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using TeamExplorer.Common;
 
 namespace GitStash.ViewModels
 {
     public class RecommendedActionsViewModel : INotifyPropertyChanged
     {
-       // private static IGitExt gitService;
         private IGitStashWrapper wrapper;
-        private string _newStashMessage = "";
         bool stashAll = false;
         bool stashUntracked = false;
         bool stashIgnored = false;
+        ITeamExplorerBase page;
 
-        public RecommendedActionsViewModel(IGitStashWrapper wrapper)
+        public RecommendedActionsViewModel(IGitStashWrapper wrapper, ITeamExplorerBase page)
         {
+            this.page = page;
             this.wrapper = wrapper;
             wrapper.StashesChangedEvent += GitService_PropertyChanged;
             CreateStashButtonCommand = new RelayCommand(p => OnClickCreateStashButton(), p => CanClickCreateButton);
@@ -108,6 +111,8 @@ namespace GitStash.ViewModels
         {
             IGitStashSaveOptions options = new GitStashOptions { All = StashAll, Ignored = StashIgnored, KeepIndex = StashKeepIndex, Untracked = StashUntracked, Message = NewStashMessage };
             IGitStashResults results = wrapper.SaveStash(options);
+            if (!string.IsNullOrEmpty(results.Message))
+                page.ShowNotification(results.Message, NotificationType.Information);
             if (results.Success)
             {
                 NewStashMessage = "";

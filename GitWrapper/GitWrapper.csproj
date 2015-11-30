@@ -110,7 +110,7 @@
     <Compile Include="IGitStashResults.cs" />
     <Compile Include="IGitStash.cs" />
     <Compile Include="IGitStashWrapper.cs" />
-    <Compile Include="IOutputLogger.cs" />
+    <Compile Include="IGitStashOutputLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GitStashItem.cs" />
     <Compile Include="GitStashOptions.cs" />
@@ -120,6 +120,12 @@
   <ItemGroup>
     <None Include="key.snk.pfx" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GitStash.Common\GitStash.Common.csproj">
+      <Project>{956e2932-c013-49c2-8aac-40a4b674ce75}</Project>
+      <Name>GitStash.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
