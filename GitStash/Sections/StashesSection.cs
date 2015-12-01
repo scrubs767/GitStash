@@ -4,6 +4,7 @@ using GitWrapper;
 using Microsoft.TeamFoundation.Controls;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.TeamFoundation.Git.Extensibility;
+using SecondLanguage;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -19,21 +20,27 @@ namespace GitStash.Sections
     {
         StashesViewModel vm;
         private IGitStashWrapper wrapper;
+        Translator T = Translator.Default;
+        public StashesSection()
+        {
 
+        }
         public override void Initialize(object sender, SectionInitializeEventArgs e)
         {
+            T.RegisterTranslationsByCulture(@"po\*.po");
+            
             base.Initialize(sender, e);
             this.wrapper = GetService<IGitStashWrapper>();
             vm = new StashesViewModel(wrapper, this);
             vm.PropertyChanged += StashesPropertyChanged;
-            Title = String.Format("Stashes({0})", vm.Stashes.Count());
+            Title = T["Stashes({0})", vm.Stashes.Count()];
             IsVisible = true;
             SectionContent = new StashesControl(vm);
         }
 
         private void StashesPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            Title = String.Format("Stashes({0})", vm.Stashes.Count());
+            Title = Title = T["Stashes({0})", vm.Stashes.Count()];
             Refresh();
         }
 

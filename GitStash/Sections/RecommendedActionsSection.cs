@@ -2,6 +2,7 @@
 using GitStash.ViewModels;
 using GitWrapper;
 using Microsoft.TeamFoundation.Controls;
+using SecondLanguage;
 using TeamExplorer.Common;
 
 namespace GitStash.Sections
@@ -10,13 +11,20 @@ namespace GitStash.Sections
     public class RecommendedActionsSection : TeamExplorerBaseSection
     {
         private IGitStashWrapper wrapper;
-
+        Translator T = Translator.Default;
+        
+        public RecommendedActionsSection()
+        {
+            T.RegisterTranslationsByCulture(@"po\*.po");
+        }
         public override void Initialize(object sender, SectionInitializeEventArgs e)
         {
+            
             base.Initialize(sender, e);
             this.wrapper = GetService<IGitStashWrapper>();            
             SectionContent = new RecommendedActionsControl(new RecommendedActionsViewModel(wrapper,this));
-            Title = "Create Stash";
+            T.RegisterTranslationsByCulture(@"po\*.po");
+            Title = T["Create Stash"];
             IsVisible = true;
         }
         public override void Refresh()

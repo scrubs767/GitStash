@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.Shell;
 using GitStash.Properties;
 using TeamExplorer.Common;
 using Microsoft.VisualStudio.TeamFoundation.Git.Extensibility;
+using SecondLanguage;
 
 namespace GitStash
 {
@@ -16,14 +17,15 @@ namespace GitStash
 
         private readonly ITeamExplorer teamExplorer;
         private readonly IGitExt gitService;
-
+        Translator T = Translator.Default;
         [ImportingConstructor]
         public StashNavigationItem([Import(typeof(SVsServiceProvider))] IServiceProvider serviceProvider)
             : base(serviceProvider)
         {
             this.Image = Resources.StashIcon;
             this.IsVisible = false;
-            this.Text = "Git Stash";
+            T.RegisterTranslationsByCulture(@"po\*.po");
+            this.Text = T["Git Stash"];
             teamExplorer = GetService<ITeamExplorer>();
             gitService = (IGitExt)serviceProvider.GetService(typeof(IGitExt));
             teamExplorer.PropertyChanged += TeamExplorerOnPropertyChanged;
