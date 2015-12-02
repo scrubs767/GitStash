@@ -199,7 +199,7 @@ namespace GitWrapper
                 GitStashResults results = new GitStashResults(stash, T["Succesfully saved stash."]);
                 if (results.Success == false)
                 {
-                    Logger.WriteLine(T["Failed"]);
+                    Logger.WriteLine(T["Failed."]);
                     results.Message = T["Failed to save stash."];
                 }
                 if (repo.Stashes.Count() <= count && results.Success)
