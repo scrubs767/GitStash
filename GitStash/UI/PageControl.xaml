@@ -14,13 +14,15 @@
                 <ResourceDictionary Source="/GitStash;component/Resources/Dictionary.xaml" />
                 <ResourceDictionary>
                     <BooleanToVisibilityConverter x:Key="BoolToVis" />
+                    <local:LanguageConverter x:Key="LangConverter" />
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
     <StackPanel Orientation="Vertical">
         <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="6">
-            <TextBlock>Branch:</TextBlock>
+            <TextBlock Text="{Binding Converter={StaticResource LangConverter}, 
+                         ConverterParameter='Branch:'}"></TextBlock>
             <teamExplorer:TextLink x:Uid="selectBranch" VerticalAlignment="Center" Margin="6,0,0,0" Text="{Binding CurrentBranch}"
                           Localization.Attributes="Text (Modifiable Readable Text)"
                           Command="{Binding Path=SelectBranchCommand}"/>
