@@ -1,4 +1,5 @@
-﻿using GitStash.UI;
+﻿using GitStash.Common;
+using GitStash.UI;
 using GitStash.ViewModels;
 using GitWrapper;
 using Microsoft.TeamFoundation.Controls;
@@ -20,18 +21,17 @@ namespace GitStash.Sections
     {
         StashesViewModel vm;
         private IGitStashWrapper wrapper;
-        Translator T = Translator.Default;
+        Translator T;
         public StashesSection()
         {
-
+            
         }
         public override void Initialize(object sender, SectionInitializeEventArgs e)
         {
-            T.RegisterTranslationsByCulture(@"po\*.po");
-            
             base.Initialize(sender, e);
+            T = GetService<IGitStashTranslator>().Translator;
             this.wrapper = GetService<IGitStashWrapper>();
-            vm = new StashesViewModel(wrapper, this);
+            vm = new StashesViewModel(wrapper, this, T);
             vm.PropertyChanged += StashesPropertyChanged;
             Title = T["Stashes({0})", vm.Stashes.Count()];
             IsVisible = true;

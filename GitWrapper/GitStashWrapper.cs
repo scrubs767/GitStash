@@ -22,17 +22,18 @@ namespace GitWrapper
         public delegate void StashesChangedEventHandler(object sender, StashesChangedEventArgs e);
         public event StashesChangedEventHandler StashesChangedEvent;
 
-        public GitStashWrapper(string path, IGitStashProjectEvents eventsService, IGitStashOutputLogger logger,IGitStashProjects projects)
-            : this(eventsService,logger,projects)
+        public GitStashWrapper(string path, IGitStashProjectEvents eventsService, IGitStashOutputLogger logger,IGitStashProjects projects, Translator T)
+            : this(eventsService,logger,projects, T)
         {
             repo = new Repository(path);
         }
 
-        public GitStashWrapper(IGitStashProjectEvents eventsService, IGitStashOutputLogger logger, IGitStashProjects projects)
+        public GitStashWrapper(IGitStashProjectEvents eventsService, IGitStashOutputLogger logger, IGitStashProjects projects, Translator T)
         {
             this.Logger = logger;
             this.eventsService = eventsService;
             this.projects = projects;
+            this.T = T;
             eventsService.ProjectDirectoryChanged += EventsService_ProjectDirectoryChanged;
             eventsService.StashesChangedEvent += EventsService_StashesChangedEvent;
             T.RegisterTranslationsByCulture(@"po\*.po");

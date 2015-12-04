@@ -11,7 +11,7 @@ msgstr ""
 "X-Generator: Poedit 1.8.6\n"
 "X-Poedit-Basepath: .\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Language: en_US\n"
+"Language: en-US\n"
 
 msgid "Apllying stash: {0}"
 msgstr "Apllying stash: {0}"
@@ -84,3 +84,6 @@ msgstr "No changes available"
 
 msgid "stash{{{0}}}: {1}"
 msgstr "stash{{{0}}}: {1}"
+
+msgid "culture"
+msgstr "en-us"

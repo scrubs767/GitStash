@@ -14,6 +14,9 @@ using Microsoft.VisualStudio.Shell.Interop;
 using System.Linq;
 using GitStash.Common;
 using Microsoft.VisualStudio.TeamFoundation.Git.Extensibility;
+using SecondLanguage;
+using System.IO;
+using System.Globalization;
 
 namespace GitStash
 {
@@ -49,12 +52,13 @@ namespace GitStash
     /// </remarks>
     [ProvideService(typeof(IGitStashWrapper))]
     [ProvideService(typeof(IGitStashProjectEvents))]
+    [ProvideService(typeof(IGitStashTranslator))]
     //[ProvideOptionPage(typeof(Options.StashOptionsPage),"Git Stash", "General", 0, 0, true)]
     [PackageRegistration(UseManagedResourcesOnly = true)]
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
     [Guid(GitStashPackage.PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
-    public sealed class GitStashPackage : Package
+    public sealed class GitStashPackage : Package, IGitStashTranslator
     {
         /// <summary>
         /// GitStashPackage GUID string.
@@ -71,6 +75,7 @@ namespace GitStash
         private IGitStashProjectEvents events = null;
         private IGitExt gitService = null;
         private GitStashProjects projects;
+        private Translator translator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GitStashPackage"/> class.
@@ -87,6 +92,7 @@ namespace GitStash
         {
             System.Diagnostics.Trace.WriteLine("**********" + msg);
         }
+
         private object CreateGitWrapperService(IServiceContainer container, Type serviceType)
         {
             TraceWriteLine("Service Requested: " + serviceType.FullName);
@@ -103,12 +109,12 @@ namespace GitStash
                     {                        
                         string path = gitService.ActiveRepositories.FirstOrDefault().RepositoryPath;
                         TraceWriteLine("Creating Wrapper service with path: " + path);
-                        wrapper = new GitStashWrapper(path, events, new OutputWindowLogger(outputWindow), projects);
+                        wrapper = new GitStashWrapper(path, events, new OutputWindowLogger(outputWindow), projects, Translator);
                     }
                     else
                     {
                         TraceWriteLine("Creating Wrapper service.");
-                        wrapper = new GitStashWrapper(events, new OutputWindowLogger(outputWindow), projects);
+                        wrapper = new GitStashWrapper(events, new OutputWindowLogger(outputWindow), projects, Translator);
                     }
                 }
                 return wrapper;
@@ -119,6 +125,12 @@ namespace GitStash
                 return events;
             }
 
+            if (typeof(IGitStashTranslator) == serviceType)
+            {
+
+                return this;
+            }
+            throw new ArgumentException();
             return null;
         }
 
@@ -137,6 +149,7 @@ namespace GitStash
                new ServiceCreatorCallback(CreateGitWrapperService);
             serviceContainer.AddService(typeof(IGitStashWrapper), callback, true);
             serviceContainer.AddService(typeof(IGitStashProjectEvents), callback, true);
+            serviceContainer.AddService(typeof(IGitStashTranslator), callback, true);
             gitService = (IGitExt)GetService(typeof(IGitExt));
             gitService.PropertyChanged += GitService_PropertyChanged;
             this.projects = new GitStashProjects(this);
@@ -147,6 +160,7 @@ namespace GitStash
                 TraceWriteLine("Setting directory: " + path);
                 events.ChangeDirectory(path);
             }
+            
             TraceWriteLine("Package Initialization: Done");
         }
 
@@ -160,7 +174,23 @@ namespace GitStash
             }
         }
 
-
+        public Translator Translator
+        {
+            get
+            {
+                if (translator == null)
+                {
+                    
+                    var poPath = Path.GetDirectoryName(GetType().Assembly.Location) + @"\po\";
+                    TraceWriteLine("PO_PATH: " + poPath);
+                    TraceWriteLine("CURRENT_CULTURE: " + CultureInfo.CurrentUICulture.Name);
+                    translator = Translator.Default;
+                    Translation[] t = translator.RegisterTranslationsByCulture(@"{0}\*.po", CultureInfo.CurrentUICulture, poPath);
+                    
+                }
+                return translator;
+            }
+        }
         #endregion
     }
 }

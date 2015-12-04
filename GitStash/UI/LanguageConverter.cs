@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Windows.Data;
 using SecondLanguage;
+using GitStash.Common;
 
 namespace GitStash.UI
 {
     public class LanguageConverter : IValueConverter
     {
-        Translator T = Translator.Default;
+        Translator T;
         public LanguageConverter()
         {
-            T.RegisterTranslationsByCulture(@"po\*.po");
-        }
+            IGitStashTranslator t = (IGitStashTranslator) GitStashPackage.GetGlobalService(typeof(IGitStashTranslator));
+            this.T = t.Translator;
+    }
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             

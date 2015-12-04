@@ -20,15 +20,14 @@ namespace GitStash
     public class StashPage : TeamExplorerBasePage, INavigateable
     {
         private static ITeamExplorer teamExplorer;
-        Translator T = Translator.Default;
+        Translator T;
         private IGitStashWrapper gitWrapper;
         private IGitExt gitService;
 
         [ImportingConstructor]
         public StashPage([Import(typeof(SVsServiceProvider))] IServiceProvider serviceProvider)
         {
-            T.RegisterTranslationsByCulture(@"po\*.po");
-            Title = T["Git Stash"];
+            
             teamExplorer = (ITeamExplorer)serviceProvider.GetService(typeof(ITeamExplorer));
             gitService = (IGitExt)serviceProvider.GetService(typeof(IGitExt));                        
            
@@ -38,7 +37,9 @@ namespace GitStash
         {
             base.Initialize(sender, e);
             gitWrapper = GetService<IGitStashWrapper>();
-            PageContent = new PageControl(new PageViewModel(this, gitWrapper));            
+            T = GetService<IGitStashTranslator>().Translator;
+            Title = T["Git Stash"];
+            PageContent = new PageControl(new PageViewModel(this, gitWrapper, T));            
         }
 
         public override object GetExtensibilityService(Type serviceType)

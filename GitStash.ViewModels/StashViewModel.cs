@@ -10,7 +10,7 @@ namespace GitStash.ViewModels
 {
     public class StashViewModel : INotifyPropertyChanged
     {
-        Translator T = Translator.Default;
+        Translator T;
         public delegate void AfterDeleteHandler(object source, AfterDeleteStashEventArgs e);
         public event AfterDeleteHandler AfterDelete;
 
@@ -23,12 +23,12 @@ namespace GitStash.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
         
-        public StashViewModel(IGitStashWrapper wrapper, IGitStash stash, ITeamExplorerBase page)
+        public StashViewModel(IGitStashWrapper wrapper, IGitStash stash, ITeamExplorerBase page, Translator T)
         {
             this.page = page;
             this.Stash = stash;
             this.wrapper = wrapper;
-            T.RegisterTranslationsByCulture(@"po\*.po");
+            this.T = T;
             PopDropDownCommand = new RelayCommand(p => OnClickPopStash(), p => AlwaysTrueCanDropDown);
             ApplyDropDownCommand = new RelayCommand(p => OnClickApplyStash(), p => AlwaysTrueCanDropDown);
             DeleteDropDownCommand = new RelayCommand(p => OnClickDropStash(), p => AlwaysTrueCanDropDown);

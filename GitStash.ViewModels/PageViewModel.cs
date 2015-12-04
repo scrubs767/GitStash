@@ -17,12 +17,12 @@ namespace GitStash.ViewModels
     {
         IGitStashWrapper wrapper;
         INavigateable page;
-        Translator T = Translator.Default;
-        public PageViewModel(INavigateable page, IGitStashWrapper wrapper)
+        Translator T;
+        public PageViewModel(INavigateable page, IGitStashWrapper wrapper, Translator T)
         {
             this.wrapper = wrapper;
             this.page = page;
-            T.RegisterTranslationsByCulture(@"po\*.po");
+            this.T = T;
             SelectBranchCommand = new RelayCommand(p => SelectBranch(), p => CanSelectBranch);
             SelectChangesCommand = new RelayCommand(p => SelectChanges(), p => CanSelectChanges);
             wrapper.StashesChangedEvent += Wrapper_StashesChangedEvent;
