@@ -21,14 +21,23 @@ namespace GitStash.ViewModels
             this.page = page;
             this.wrapper = wrapper;
             wrapper.StashesChangedEvent += GitService_PropertyChanged;
+            UntrackedFilesCount = String.Format("{{{0}}}", wrapper.GetUntrackedFileCount());
+            IgnoredFilesCount = String.Format("{{{0}}}", wrapper.GetIgnoredFileCount());
             CreateStashButtonCommand = new RelayCommand(p => OnClickCreateStashButton(), p => CanClickCreateButton);
             NewStashMessage = "";
         }
 
+        public string UntrackedFilesCount { get; set; }
+        public string IgnoredFilesCount { get; set; }
+
         private void GitService_PropertyChanged(object sender, StashesChangedEventArgs e)
         {
-                OnPropertyChanged("CanCreateStash");
-                OnPropertyChanged("CanClickCreateButton");
+            UntrackedFilesCount = String.Format("{{{0}}}", wrapper.GetUntrackedFileCount());
+            IgnoredFilesCount = String.Format("{{{0}}}", wrapper.GetIgnoredFileCount());
+            OnPropertyChanged("CanCreateStash");
+            OnPropertyChanged("CanClickCreateButton");
+            OnPropertyChanged("UntrackedFilesCount");
+            OnPropertyChanged("IgnoredFilesCount");
         }
         
         public string NewStashMessage { get; set; }

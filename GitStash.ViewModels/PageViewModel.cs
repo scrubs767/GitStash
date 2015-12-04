@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.TeamFoundation.Git.Extensibility;
 using GitWrapper;
 using GitStash.Common;
 using Microsoft.TeamFoundation.MVVM;
+using SecondLanguage;
 
 namespace GitStash.ViewModels
 {
@@ -16,11 +17,12 @@ namespace GitStash.ViewModels
     {
         IGitStashWrapper wrapper;
         INavigateable page;
-
-        public PageViewModel(INavigateable page, IGitStashWrapper wrapper)
+        Translator T;
+        public PageViewModel(INavigateable page, IGitStashWrapper wrapper, Translator T)
         {
             this.wrapper = wrapper;
             this.page = page;
+            this.T = T;
             SelectBranchCommand = new RelayCommand(p => SelectBranch(), p => CanSelectBranch);
             SelectChangesCommand = new RelayCommand(p => SelectChanges(), p => CanSelectChanges);
             wrapper.StashesChangedEvent += Wrapper_StashesChangedEvent;
@@ -41,7 +43,7 @@ namespace GitStash.ViewModels
 
         public bool CanSelectChanges { get; private set; }
 
-        public string ChangesText { get { return wrapper.WorkingDirHasChanges() ? "Changes" : "No changes available"; } }
+        public string ChangesText { get { return wrapper.WorkingDirHasChanges() ? T["Changes"] : T["No changes available"]; } }
 
         public RelayCommand SelectChangesCommand { get; set; }
 
