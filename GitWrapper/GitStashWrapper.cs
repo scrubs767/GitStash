@@ -309,6 +309,24 @@ namespace GitWrapper
             }
         }
 
+        public int GetUntrackedFileCount()
+        {
+            lock (lockObject)
+            {
+                if (repo == null) throw new InvalidOperationException("Repository not initialized");
+                return repo.RetrieveStatus().Untracked.Count();
+            }
+        }
+
+        public int GetIgnoredFileCount()
+        {
+            lock (lockObject)
+            {
+                if (repo == null) throw new InvalidOperationException("Repository not initialized");
+                return repo.RetrieveStatus().Ignored.Count();
+            }
+        }
+
         private static string GetUserEmailAddressVS14()
         {
             // It's a good practice to request explicit permission from

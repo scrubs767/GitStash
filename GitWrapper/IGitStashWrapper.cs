@@ -14,5 +14,7 @@ namespace GitWrapper
         IGitStashResults SaveStash(IGitStashSaveOptions options);
         bool WorkingDirHasChanges();
         event GitStashWrapper.StashesChangedEventHandler StashesChangedEvent;
+        int GetUntrackedFileCount();
+        int GetIgnoredFileCount();
     }
 }
