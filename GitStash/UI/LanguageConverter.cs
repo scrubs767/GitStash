@@ -7,11 +7,14 @@ namespace GitStash.UI
 {
     public class LanguageConverter : IValueConverter
     {
-        Translator T;
+        Translator T; 
         public LanguageConverter()
         {
             IGitStashTranslator t = (IGitStashTranslator) GitStashPackage.GetGlobalService(typeof(IGitStashTranslator));
-            this.T = t.Translator;
+            if (t == null)
+                this.T = Translator.Default; // assumeing were in design mode.
+            else
+                this.T = t.Translator;
     }
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
