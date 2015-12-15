@@ -2,10 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Microsoft.TeamFoundation.Controls;
-using GitStash.ViewModels;
-using Microsoft.VisualStudio.Shell.Interop;
-using System.Linq;
-using Microsoft.VisualStudio.TeamFoundation.Git.Extensibility;
+
 using GitWrapper;
 using GitStash.Common;
 using Microsoft.TeamFoundation.MVVM;
