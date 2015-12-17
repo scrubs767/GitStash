@@ -1,6 +1,7 @@
 ﻿using GitWrapper;
 using Microsoft.TeamFoundation.Controls;
 using Microsoft.TeamFoundation.MVVM;
+using SecondLanguage;
 using System;
 using System.ComponentModel;
 using TeamExplorer.Common;
@@ -9,6 +10,7 @@ namespace GitStash.ViewModels
 {
     public class StashViewModel : INotifyPropertyChanged
     {
+        Translator T;
         public delegate void AfterDeleteHandler(object source, AfterDeleteStashEventArgs e);
         public event AfterDeleteHandler AfterDelete;
 
@@ -21,11 +23,12 @@ namespace GitStash.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
         
-        public StashViewModel(IGitStashWrapper wrapper, IGitStash stash, ITeamExplorerBase page)
+        public StashViewModel(IGitStashWrapper wrapper, IGitStash stash, ITeamExplorerBase page, Translator T)
         {
             this.page = page;
             this.Stash = stash;
             this.wrapper = wrapper;
+            this.T = T;
             PopDropDownCommand = new RelayCommand(p => OnClickPopStash(), p => AlwaysTrueCanDropDown);
             ApplyDropDownCommand = new RelayCommand(p => OnClickApplyStash(), p => AlwaysTrueCanDropDown);
             DeleteDropDownCommand = new RelayCommand(p => OnClickDropStash(), p => AlwaysTrueCanDropDown);
@@ -62,6 +65,6 @@ namespace GitStash.ViewModels
         public RelayCommand DeleteDropDownCommand { get; set; }
         public bool AlwaysTrueCanDropDown { get { return true; } }
 
-        public string DisplayString {get{ return String.Format("stash{{{0}}}: {1}", Stash.Index, Stash.Message); }}
+        public string DisplayString {get{ return T["stash{{{0}}}: {1}", Stash.Index, Stash.Message]; }}
     }
 }

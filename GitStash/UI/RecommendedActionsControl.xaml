@@ -14,26 +14,34 @@
                 <ResourceDictionary Source="/GitStash;component/Resources/Dictionary.xaml" />
                 <ResourceDictionary>
                     <BooleanToVisibilityConverter x:Key="BoolToVis" />
+                    <local:LanguageConverter x:Key="LangConverter" />
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
     <StackPanel>
-        <wpf:LabeledTextBox  Text="{Binding NewStashMessage, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Grid.Row="1" VerticalAlignment="Center" Grid.Column="0" Margin="5" HintText="Enter a stash name &lt;Required&gt;"
+        <wpf:LabeledTextBox  Text="{Binding NewStashMessage, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" Grid.Row="1" VerticalAlignment="Center" Grid.Column="0" Margin="5" HintText="{Binding Converter={StaticResource LangConverter}, 
+                         ConverterParameter='Enter a stash name &lt;Required&gt;'}"
                                 NameAndAutomationId="Stash name"
                                 IsEnabled="{Binding CanCreateStash}"
                                 Localization.Attributes="HintText (Modifiable Readable Text) NameAndAutomationId (Modifiable Readable Text)"
                                 IsRequired="true" AcceptsReturn="false" />
         <StackPanel>
-            <CheckBox IsChecked="{Binding StashKeepIndex}" IsEnabled="{Binding CanCreateStash}" Margin="5,1,5,1" HorizontalAlignment="Left" Grid.Column="0">Keep Index</CheckBox>
+            <CheckBox IsChecked="{Binding StashKeepIndex}" IsEnabled="{Binding CanCreateStash}" Margin="5,1,5,1" HorizontalAlignment="Left" Grid.Column="0" Content="{Binding Converter={StaticResource LangConverter},ConverterParameter='Keep Index'}"></CheckBox>
             <Separator Margin="15,1,15,1"/>
-            <CheckBox IsChecked="{Binding StashAll}" IsEnabled="{Binding CanCreateStash}" Margin="5,1,5,1" HorizontalAlignment="Left" Grid.Column="1">Stash Everything (untracked and Ignored)</CheckBox>
-            <CheckBox IsChecked="{Binding StashUntracked}" IsEnabled="{Binding CanCreateStash}" Margin="5,1,5,1" HorizontalAlignment="Left" Grid.Column="2">Include Untracked Files</CheckBox>
-            <CheckBox IsChecked="{Binding StashIgnored}" IsEnabled="{Binding CanCreateStash}" Margin="5,1,5,1" HorizontalAlignment="Left" Grid.Column="3">Include Ignored</CheckBox>
-            <Separator Margin="15,1,15,1"/>
+            <StackPanel Orientation="Horizontal">
+                <CheckBox IsChecked="{Binding StashUntracked}" IsEnabled="{Binding CanCreateStash}" Margin="5,1,5,1" HorizontalAlignment="Left" Grid.Column="2" Content="{Binding Converter={StaticResource LangConverter},ConverterParameter='Include Untracked Files'}"></CheckBox>
+                <TextBlock Text="{Binding UntrackedFilesCount}"/>
+            </StackPanel>
+            <CheckBox IsChecked="{Binding StashAll}" IsEnabled="{Binding CanCreateStash}" Margin="5,1,5,1" HorizontalAlignment="Left" Grid.Column="1" Content="{Binding Converter={StaticResource LangConverter},ConverterParameter='Stash Everything (untracked and Ignored)'}"></CheckBox>
+            <StackPanel  Orientation="Horizontal">
+                <CheckBox IsChecked="{Binding StashIgnored}" IsEnabled="{Binding CanCreateStash}" Margin="5,1,5,1" HorizontalAlignment="Left" Grid.Column="3" Content="{Binding Converter={StaticResource LangConverter},ConverterParameter='Include Ignored'}"></CheckBox>
+                <TextBlock Text="{Binding IgnoredFilesCount}"/>
+        </StackPanel>
+        <Separator Margin="15,1,15,1"/>
         </StackPanel>
         <WrapPanel>
-            <Button Grid.Row="1" Command="{Binding CreateStashButtonCommand}"  Margin="5,1,5,1" Width="60" VerticalAlignment="Center" Grid.Column="1">Save</Button>
+            <Button Grid.Row="1" Command="{Binding CreateStashButtonCommand}"  Margin="5,1,5,1" Width="60" VerticalAlignment="Center" Grid.Column="1" Content="{Binding Converter={StaticResource LangConverter},ConverterParameter='Save'}"></Button>
         </WrapPanel>
     </StackPanel>
 </UserControl>
