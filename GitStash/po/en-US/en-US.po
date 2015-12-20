@@ -1,0 +1,89 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Git Stash\n"
+"POT-Creation-Date: 2015-12-01 18:54-0500\n"
+"PO-Revision-Date: 2015-12-01 19:08-0500\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.6\n"
+"X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en-US\n"
+
+msgid "Apllying stash: {0}"
+msgstr "Apllying stash: {0}"
+
+msgid "Repository not initialized"
+msgstr "Repository not initialized"
+
+msgid "There are changes in your working directory, aborting."
+msgstr "There are changes in your working directory, aborting."
+
+msgid "Succesfully applied stash."
+msgstr "Succesfully applied stash."
+
+msgid "There are changes in your working directory."
+msgstr "There are changes in your working directory."
+
+msgid "Done."
+msgstr "Done."
+
+msgid "Failed."
+msgstr "Failed."
+
+msgid "Command apply was called and reported success, but stash count changed."
+msgstr "Command apply was called and reported success, but stash count changed."
+
+msgid "Your project has not been saved, aborting"
+msgstr "Your project has not been saved, aborting"
+
+msgid "Your project has not been saved"
+msgstr "Your project has not been saved"
+
+msgid "Saving stash: {0}"
+msgstr "Saving stash: {0}"
+
+msgid "Nothing to save."
+msgstr "Nothing to save."
+
+msgid "Nothing to stash."
+msgstr "Nothing to stash."
+
+msgid "Succesfully saved stash."
+msgstr "Succesfully saved stash."
+
+msgid "Failed to save stash."
+msgstr "Failed to save stash."
+
+msgid "perhaps you have untracked files, and didn't select Untracked."
+msgstr "perhaps you have untracked files, and didn't select Untracked."
+
+msgid "Deleting stash: {0}"
+msgstr "Deleting stash: {0}"
+
+msgid "Deleted Stash"
+msgstr "Deleted Stash"
+
+msgid "Failed to delete stash"
+msgstr "Failed to delete stash"
+
+msgid "Create Stash"
+msgstr "Create Stash"
+
+msgid "Stashes({0})"
+msgstr "Stashes({0})"
+
+msgid "Git Stash"
+msgstr "Git Stash"
+
+msgid "No changes available"
+msgstr "No changes available"
+
+msgid "stash{{{0}}}: {1}"
+msgstr "stash{{{0}}}: {1}"
+
+msgid "culture"
+msgstr "en-us"

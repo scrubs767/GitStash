@@ -6,6 +6,7 @@ using GitWrapper;
 using Moq;
 using System.Threading;
 using TeamExplorer.Common;
+using SecondLanguage;
 
 namespace GitStashTest
 {
@@ -35,6 +36,8 @@ namespace GitStashTest
             return stash;
         }
 
+        Translator T = Translator.Default;
+
         [TestMethod]
         public void TestPopCallsWrapper()
         {
@@ -53,7 +56,7 @@ namespace GitStashTest
                 .Callback(() => waitHandle.Set())
                 .Verifiable();
 
-            GitStash.ViewModels.StashViewModel vm = new GitStash.ViewModels.StashViewModel(wrapper.Object, stash.Object, page.Object);
+            GitStash.ViewModels.StashViewModel vm = new GitStash.ViewModels.StashViewModel(wrapper.Object, stash.Object, page.Object, T);
             Assert.IsTrue(vm.PopDropDownCommand != null);
             vm.PopDropDownCommand.Execute(null);
             waitHandle.WaitOne(5000);
@@ -76,7 +79,7 @@ namespace GitStashTest
                 .Returns(results.Object)
                 .Verifiable();
 
-            GitStash.ViewModels.StashViewModel vm = new GitStash.ViewModels.StashViewModel(wrapper.Object, stash.Object, page.Object);
+            GitStash.ViewModels.StashViewModel vm = new GitStash.ViewModels.StashViewModel(wrapper.Object, stash.Object, page.Object, T);
             Assert.IsTrue(vm.ApplyDropDownCommand != null);
             vm.PopDropDownCommand.Execute(null);
             waitHandle.WaitOne(5000);
@@ -99,7 +102,7 @@ namespace GitStashTest
                 .Returns(results.Object)
                 .Verifiable();
 
-            GitStash.ViewModels.StashViewModel vm = new GitStash.ViewModels.StashViewModel(wrapper.Object, stash.Object, page.Object);
+            GitStash.ViewModels.StashViewModel vm = new GitStash.ViewModels.StashViewModel(wrapper.Object, stash.Object, page.Object, T);
             Assert.IsTrue(vm.ApplyDropDownCommand != null);
             vm.PopDropDownCommand.Execute(null);
             waitHandle.WaitOne(5000);

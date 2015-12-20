@@ -2,6 +2,7 @@
 using GitWrapper;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using SecondLanguage;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -12,6 +13,8 @@ namespace GitStashTest
     [TestClass]
     public class TestStashesViewModel
     {
+        Translator T = Translator.Default;
+
         [TestMethod]
         public void GitWrapperStashesChangedEventFiresPropertyChangedEvent()
         {
@@ -24,7 +27,7 @@ namespace GitStashTest
             gitStashes.Add(gitStash.Object);
             wrapper.Setup(w => w.Stashes).Returns(gitStashes);
 
-            StashesViewModel vm = new StashesViewModel(wrapper.Object, page.Object);
+            StashesViewModel vm = new StashesViewModel(wrapper.Object, page.Object, T);
             AutoResetEvent waitHandle = new AutoResetEvent(false);
             bool eventWasDispatched = false;
 
@@ -46,7 +49,7 @@ namespace GitStashTest
             gitStashes.Add(gitStash.Object);
             wrapper.Setup(w => w.Stashes).Returns(gitStashes);
 
-            StashesViewModel vm = new StashesViewModel(wrapper.Object, page.Object);
+            StashesViewModel vm = new StashesViewModel(wrapper.Object, page.Object, T);
 
             Assert.IsTrue(vm.Stashes.Count() == 1);
             Assert.IsTrue(vm.Stashes.ElementAt(0).Stash.GetHashCode() == gitStash.Object.GetHashCode());
@@ -71,7 +74,7 @@ namespace GitStashTest
                 It.Is<int>(i => i == 0)))
                 .Returns(results.Object);
 
-            StashesViewModel vm = new StashesViewModel(wrapper.Object, page.Object);
+            StashesViewModel vm = new StashesViewModel(wrapper.Object, page.Object, T);
             AutoResetEvent waitHandle = new AutoResetEvent(false);
             bool eventWasDispatched = false;
             vm.PropertyChanged += (o, e) => { waitHandle.Set(); eventWasDispatched = true; };
