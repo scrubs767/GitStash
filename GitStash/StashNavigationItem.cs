@@ -12,7 +12,7 @@ using GitStash.Common;
 
 namespace GitStash
 {
-    [TeamExplorerNavigationItem(GitStashPackage.StashNavigationItem, 1500, TargetPageId = GitStashPackage.StashPage)]
+    [TeamExplorerNavigationItem(GitStashPackage.StashNavigationItem, 1500)]
     public class StashNavigationItem : TeamExplorerNavigationItemBase
     {
 
@@ -30,6 +30,7 @@ namespace GitStash
             teamExplorer = GetService<ITeamExplorer>();
             gitService = (IGitExt)serviceProvider.GetService(typeof(IGitExt));
             teamExplorer.PropertyChanged += TeamExplorerOnPropertyChanged;
+            IsVisible = true;
         }
 
         private void TeamExplorerOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
@@ -39,10 +40,10 @@ namespace GitStash
 
         private void UpdateVisible()
         {
-            IsVisible = false;
+            IsEnabled = false;
             if (gitService != null && gitService.ActiveRepositories.Any())
             {
-                IsVisible = true;
+                IsEnabled = true;
             }
         }
 
