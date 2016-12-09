@@ -2,7 +2,7 @@
 using System.Linq;
 using System.ComponentModel;
 using GitWrapper;
-using TeamExplorer.Common;
+using Scrubs.TeamExplorer;
 using GitStash.Common;
 using SecondLanguage;
 

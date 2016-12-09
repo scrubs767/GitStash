@@ -4,16 +4,25 @@ using GitStash.ViewModels;
 using GitWrapper;
 using Microsoft.TeamFoundation.Controls;
 using SecondLanguage;
-using System.IO;
-using TeamExplorer.Common;
+using System;
+using Scrubs.TeamExplorer;
+using System.ComponentModel.Composition;
+using Microsoft.VisualStudio.Shell;
+
 
 namespace GitStash.Sections
 {
     [TeamExplorerSection(GitStashPackage.RecommendedActionsSection, GitStashPackage.StashPage, 120)]
-    public class RecommendedActionsSection : TeamExplorerBaseSection
+    public class RecommendedActionsSection : TeamExplorerSectionBase
     {
         private IGitStashWrapper wrapper;
-       
+
+        [ImportingConstructor]
+        public RecommendedActionsSection([Import(typeof(SVsServiceProvider))] IServiceProvider serviceProvider) : base(serviceProvider)
+        {
+
+        }
+
         public override void Initialize(object sender, SectionInitializeEventArgs e)
         {
             base.Initialize(sender, e);

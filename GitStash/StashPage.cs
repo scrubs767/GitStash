@@ -1,7 +1,7 @@
 ﻿using System;
 
 using Microsoft.TeamFoundation.Controls;
-using TeamExplorer.Common;
+using Scrubs.TeamExplorer;
 using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Shell;
 using GitStash.UI;
@@ -17,19 +17,19 @@ namespace GitStash
 
 
     [TeamExplorerPage(GitStashPackage.StashPage, Undockable = true)]
-    public class StashPage : TeamExplorerBasePage, INavigateable
+    public class StashPage : TeamExplorerPageBase, INavigateable
     {
         private static ITeamExplorer teamExplorer;
         Translator T;
         private IGitStashWrapper gitWrapper;
-        private IGitExt gitService;
+        //private IGitExt gitService;
 
         [ImportingConstructor]
-        public StashPage([Import(typeof(SVsServiceProvider))] IServiceProvider serviceProvider)
+        public StashPage([Import(typeof(SVsServiceProvider))] IServiceProvider serviceProvider) : base(serviceProvider)
         {
             
             teamExplorer = (ITeamExplorer)serviceProvider.GetService(typeof(ITeamExplorer));
-            gitService = (IGitExt)serviceProvider.GetService(typeof(IGitExt));                        
+            //gitService = (IGitExt)serviceProvider.GetService(typeof(IGitExt));                        
            
         }
 

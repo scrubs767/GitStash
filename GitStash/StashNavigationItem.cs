@@ -5,7 +5,7 @@ using System.Linq;
 using Microsoft.TeamFoundation.Controls;
 using Microsoft.VisualStudio.Shell;
 using GitStash.Properties;
-using TeamExplorer.Common;
+using Scrubs.TeamExplorer;
 using Microsoft.VisualStudio.TeamFoundation.Git.Extensibility;
 using SecondLanguage;
 using GitStash.Common;
@@ -13,7 +13,7 @@ using GitStash.Common;
 namespace GitStash
 {
     [TeamExplorerNavigationItem(GitStashPackage.StashNavigationItem, 1500)]
-    public class StashNavigationItem : TeamExplorerBaseNavigationItem
+    public class StashNavigationItem : TeamExplorerNavigationItemBase
     {
 
         private readonly ITeamExplorer teamExplorer;

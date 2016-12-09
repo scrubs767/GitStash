@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using GitWrapper;
 using Moq;
 using System.Threading;
-using TeamExplorer.Common;
+using Scrubs.TeamExplorer;
 using SecondLanguage;
 
 namespace GitStashTest

@@ -4,7 +4,7 @@ using Microsoft.TeamFoundation.MVVM;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using TeamExplorer.Common;
+using Scrubs.TeamExplorer;
 
 namespace GitStash.ViewModels
 {

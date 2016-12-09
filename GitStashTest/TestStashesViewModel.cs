@@ -6,7 +6,7 @@ using SecondLanguage;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using TeamExplorer.Common;
+using Scrubs.TeamExplorer;
 
 namespace GitStashTest
 {

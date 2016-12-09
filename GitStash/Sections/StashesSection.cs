@@ -4,27 +4,25 @@ using GitStash.ViewModels;
 using GitWrapper;
 using Microsoft.TeamFoundation.Controls;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.TeamFoundation.Git.Extensibility;
 using SecondLanguage;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TeamExplorer.Common;
+using Scrubs.TeamExplorer;
 
 namespace GitStash.Sections
 {
     [TeamExplorerSection(GitStashPackage.StashesSection, GitStashPackage.StashPage, 220)]
-    public class StashesSection : TeamExplorerBaseSection
+    public class StashesSection : TeamExplorerSectionBase
     {
         StashesViewModel vm;
         private IGitStashWrapper wrapper;
         Translator T;
-        public StashesSection()
+
+        [ImportingConstructor]
+        public StashesSection([Import(typeof(SVsServiceProvider))] IServiceProvider serviceProvider) : base(serviceProvider)
         {
-            
+
         }
         public override void Initialize(object sender, SectionInitializeEventArgs e)
         {

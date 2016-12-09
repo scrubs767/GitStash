@@ -4,7 +4,7 @@ using Microsoft.TeamFoundation.MVVM;
 using SecondLanguage;
 using System;
 using System.ComponentModel;
-using TeamExplorer.Common;
+using Scrubs.TeamExplorer;
 
 namespace GitStash.ViewModels
 {
