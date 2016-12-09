@@ -12,7 +12,7 @@ using GitStash.Common;
 
 namespace GitStash
 {
-    [TeamExplorerNavigationItem(GitStashPackage.StashNavigationItem, 1500)]
+    [TeamExplorerNavigationItem(GitStashPackage.StashNavigationItem, 1500, TargetPageId = GitStashPackage.StashPage)]
     public class StashNavigationItem : TeamExplorerBaseNavigationItem
     {
 
