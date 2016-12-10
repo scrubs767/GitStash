@@ -19,11 +19,6 @@ namespace GitStash.Sections
         private IGitStashWrapper wrapper;
         Translator T;
 
-        [ImportingConstructor]
-        public StashesSection([Import(typeof(SVsServiceProvider))] IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-
-        }
         public override void Initialize(object sender, SectionInitializeEventArgs e)
         {
             base.Initialize(sender, e);

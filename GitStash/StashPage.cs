@@ -22,20 +22,11 @@ namespace GitStash
         private static ITeamExplorer teamExplorer;
         Translator T;
         private IGitStashWrapper gitWrapper;
-        //private IGitExt gitService;
-
-        [ImportingConstructor]
-        public StashPage([Import(typeof(SVsServiceProvider))] IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-            
-            teamExplorer = (ITeamExplorer)serviceProvider.GetService(typeof(ITeamExplorer));
-            //gitService = (IGitExt)serviceProvider.GetService(typeof(IGitExt));                        
-           
-        }
 
         public override void Initialize(object sender, PageInitializeEventArgs e)
         {
             base.Initialize(sender, e);
+            teamExplorer = (ITeamExplorer)ServiceProvider.GetService(typeof(ITeamExplorer));
             gitWrapper = GetService<IGitStashWrapper>();
             T = GetService<IGitStashTranslator>().Translator;
             Title = T["Git Stash"];

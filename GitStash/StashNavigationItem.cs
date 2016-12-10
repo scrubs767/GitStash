@@ -12,7 +12,7 @@ using GitStash.Common;
 
 namespace GitStash
 {
-    [TeamExplorerNavigationItem(GitStashPackage.StashNavigationItem, 1500)]
+    [TeamExplorerNavigationItem(GitStashPackage.StashNavigationItem, 1500, TargetPageId = GitStashPackage.StashPage)]
     public class StashNavigationItem : TeamExplorerNavigationItemBase
     {
 
@@ -21,8 +21,8 @@ namespace GitStash
         Translator T;
         [ImportingConstructor]
         public StashNavigationItem([Import(typeof(SVsServiceProvider))] IServiceProvider serviceProvider)
-            : base(serviceProvider)
         {
+            ServiceProvider = serviceProvider;
             this.Image = Resources.StashIcon;
             this.IsVisible = false;
             this.T = GetService<IGitStashTranslator>().Translator;

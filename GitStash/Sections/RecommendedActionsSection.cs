@@ -17,12 +17,6 @@ namespace GitStash.Sections
     {
         private IGitStashWrapper wrapper;
 
-        [ImportingConstructor]
-        public RecommendedActionsSection([Import(typeof(SVsServiceProvider))] IServiceProvider serviceProvider) : base(serviceProvider)
-        {
-
-        }
-
         public override void Initialize(object sender, SectionInitializeEventArgs e)
         {
             base.Initialize(sender, e);
