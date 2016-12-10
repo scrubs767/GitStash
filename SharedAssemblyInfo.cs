@@ -6,6 +6,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
 [assembly: ComVisible(false)]
-[assembly: AssemblyVersion("1.0")]
+[assembly: AssemblyVersion("1.1")]
 [assembly: AssemblyConfiguration("Retail")]
 [assembly: AssemblyDescription("Flavor=Retail")]
