@@ -66,6 +66,7 @@
     </Compile>
     <Compile Include="GitStashFileWatcher.cs" />
     <Compile Include="GitStashProjects.cs" />
+    <Compile Include="ShowStashPageCommand.cs" />
     <Compile Include="UI\LanguageConverter.cs" />
     <Compile Include="OutputWindowLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -107,6 +108,9 @@
     <None Include="app.config" />
     <None Include="Key.snk" />
     <None Include="packages.config" />
+    <VSCTCompile Include="GitStashPackage.vsct">
+      <ResourceName>Menus.ctmenu</ResourceName>
+    </VSCTCompile>
     <Content Include="po\en-US\en-US.po">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
@@ -119,6 +123,8 @@
     <None Include="Resources\glyphicons-135-inbox-in.png" />
     <None Include="Resources\glyphicons-132-inbox-plus.png" />
     <None Include="Resources\glyphicons-133-inbox-minus.png" />
+    <Content Include="Resources\ShowStashPageCommand.png" />
+    <None Include="Resources\stash_icon_green.png" />
     <Content Include="Resources\VSPackage1.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -252,6 +258,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
+      <MergeWithCTO>true</MergeWithCTO>
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>

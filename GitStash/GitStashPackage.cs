@@ -58,6 +58,7 @@ namespace GitStash
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
     [Guid(GitStashPackage.PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
+    [ProvideMenuResource("Menus.ctmenu", 1)]
     public sealed class GitStashPackage : Package, IGitStashTranslator
     {
         /// <summary>
@@ -162,6 +163,7 @@ namespace GitStash
             }
             
             TraceWriteLine("Package Initialization: Done");
+            ShowStashPageCommand.Initialize(this);
         }
 
         private void GitService_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
