@@ -67,6 +67,7 @@
     <Compile Include="GitStashFileWatcher.cs" />
     <Compile Include="GitStashProjects.cs" />
     <Compile Include="ShowStashPageCommand.cs" />
+    <Compile Include="UI\Colors.cs" />
     <Compile Include="UI\LanguageConverter.cs" />
     <Compile Include="OutputWindowLogger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -236,7 +237,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Scrubs.TeamExplorer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Scrubs.TeamExplorer.1.1.2\lib\net452\Scrubs.TeamExplorer.dll</HintPath>
+      <HintPath>..\packages\Scrubs.TeamExplorer.1.1.7\lib\net452\Scrubs.TeamExplorer.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="SecondLanguage, Version=1.0.2.1, Culture=neutral, processorArchitecture=MSIL">
