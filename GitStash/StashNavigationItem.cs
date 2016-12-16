@@ -12,7 +12,7 @@ using GitStash.Common;
 using System.Windows.Media;
 
 namespace GitStash
-{    
+{
     [TeamExplorerNavigationItem(GitStashPackage.StashNavigationItem, 1500, TargetPageId = GitStashPackage.StashPage)]
     [PartCreationPolicy(CreationPolicy.NonShared)]
     public class StashNavigationItem : TeamExplorerNavigationItemBase
@@ -28,21 +28,26 @@ namespace GitStash
 
             Image = Resources.StashIcon;
             ArgbColor = UI.Colors.NavigationItemGreen.ToInt32();
-            IsVisible = true;       
             IsEnabled = true;
             this.T = GetService<IGitStashTranslator>().Translator;
             Text = T["GitStash"];
             teamExplorer = GetService<ITeamExplorer>();
             gitService = (IGitExt)serviceProvider.GetService(typeof(IGitExt));
             teamExplorer.PropertyChanged += TeamExplorerOnPropertyChanged;
+            Refresh();
         }
 
         private void TeamExplorerOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
-            IsEnabled = false;
+            Refresh();
+        }
+
+        private void Refresh()
+        {
+            IsVisible = false;
             if (gitService != null && gitService.ActiveRepositories.Any())
             {
-                IsEnabled = true;
+                IsVisible = true;
             }
         }
 
